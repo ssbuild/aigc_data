@@ -16,6 +16,7 @@
  |-----| :-----------:  |:-------------------------------------------------:|:--------:|:------:| 
  | 1   |悟道 200G文本 | https://data.baai.ac.cn/details/WuDaoCorporaText  |     | 不需要秘钥 |
  | 2   |Pile, 1.3T的英文数据|             https://pile.eleuther.ai/             |  需要强力清洗  | 不需要秘钥  |
+ | 3    |Tigerbot 中文开源预训练集 - 55G |  https://huggingface.co/datasets/TigerResearch/pretrain_zh/tree/main |   |不需要秘钥|
 
 
 # 可下载的开源数据集
