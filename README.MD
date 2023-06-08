@@ -20,7 +20,9 @@
 
 
 # 可下载的开源数据集
-## 1.悟道 - 200G文本，下载链接：https://data.baai.ac.cn/details/WuDaoCorporaText, 数据格式
+## 1.悟道 - 200G文本  
+下载链接：https://data.baai.ac.cn/details/WuDaoCorporaText  
+数据格式：
 {
         "id": 2,<br>
         "uniqueKey": "074ca2f564544686f0fb6da026e00cac",<br>
