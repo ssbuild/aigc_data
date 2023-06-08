@@ -36,38 +36,27 @@
 ## 2. Pile - 1.3T的英文数据, 需要强力清洗  
 下载链接 https://pile.eleuther.ai/  
 数据格式：  
+```json
 {
-	"text": "Q:\n\nFor some reason after inputting cin text, the cout comes out blank. Any ideas?\n\nSo I am trying to create a simple Text RPG. But, this one problem is holding me back.\n#include \n\nusing namespace std;\n\nint main()\n{\n int input;\n long Sven;\n long Macy;\n\n cout<<"
-	Choose your Character - 1. Sven or 2. Macy: ";\n cin>>input;\n cin.ignore();\n\n if ( input == Sven ){\n cout<<"
-	Welcome to CRPG,
-	my good Sir!";\n }\n\n if (input == Macy ){\n cout<<"
-	Girls cant fight,
-	go back: ";\n }\n}\n\nSo this code here is what I have at the moment. When I run the program, it allows me to type the name of the character I want to choose. But, the output is always just a blank area of text. I am more or less new to C++ but, I have nice prior knowledge. Any help is great.\n\nA:\n\nWhat threw me off is when you said it allows me to type the name of the character I want to choose\nIn that case, go ahead with comparing the strings:\nEDIT: As Mohammed suggested, comparing strings can be done directly:\nstring input;\n\ncout<<"
-	Choose your Character - 1. Sven or 2. Macy: ";\ncin>>input;\ncin.ignore();\n\nif ( input == "
-	Sven " ){\n cout<<"
-	Welcome to CRPG,
-	my good Sir!";\n}\n\nelse if ( input == "
-	Macy "){\ncout<<"
-	Girls cant fight,
-	go back: ";\n}\n\n",
-	"meta": {
-		"pile_set_name": "StackExchange"
-	}
-}
+  "text": "Q:\n\nFor some reason after inputting cin text, the cout comes out blank. Any ideas?\n\nSo I am trying to create a simple Text RPG. But, this one problem is holding me back.\n#include \n\nusing namespace std;\n\nint main()\n{\n int input;\n long Sven;\n long Macy;\n\n cout<<\"Choose your Character- 1.Sven or 2.Macy: \";\n cin>>input;\n cin.ignore();\n\n if ( input == Sven ){\n cout<<\"Welcome to CRPG, my good Sir!\";\n }\n\n if (input == Macy ){\n cout<<\"Girls cant fight, go back: \";\n }\n}\n\nSo this code here is what I have at the moment. When I run the program, it allows me to type the name of the character I want to choose. But, the output is always just a blank area of text. I am more or less new to C++ but, I have nice prior knowledge. Any help is great.\n\nA:\n\nWhat threw me off is when you said it allows me to type the name of the character I want to choose\nIn that case, go ahead with comparing the strings:\nEDIT: As Mohammed suggested, comparing strings can be done directly:\nstring input;\n\ncout<<\"Choose your Character- 1.Sven or 2.Macy: \";\ncin>>input;\ncin.ignore();\n\nif ( input == \"Sven\" ){\n cout<<\"Welcome to CRPG, my good Sir!\";\n}\n\nelse if ( input == \"Macy\"){\ncout<<\"Girls cant fight, go back: \";\n}\n\n", 
+  "meta": {"pile_set_name": "StackExchange"}}
+```
 <br>
 =======
 
 ## 3. Tigerbot 中文开源预训练集 <br>
 下载链接: https://huggingface.co/datasets/TigerResearch/pretrain_zh/tree/main <br>
 数据格式：<br>
+```json
 {
-    "dataType": "zh-books", <br>
-    "title ": "格列佛游记", <br>
-    "content ": "格列佛游记 前言一不论是不是真正读过，或者通读过，大约谁都知道《格列佛游记》是一部世界名著。在中国读者中，乔纳森·斯威夫特的名字或者不如莎士比亚、狄更斯、萧伯纳来得响亮，可是他的“小人国”、“大人国”的故事倒差不多称得上家喻户晓了。我记得十多年前中学英语的课本上好像就有过“小人国”游记的节选，当然是简写过的。这么一来，在“家喻户晓”的同时，《格列佛游记》在一般人的心中仿佛成了一本儿童读物。那么到底是不是呢？如果不是，它究竟又是怎样的一部书？《格列佛游记》是一部奇书，但我不同意有些评论家的观点，认为这是一本“儿童读物”。神奇的想象，夸张的手段，寓言的笔法（第四卷），固然是一般儿童读物普遍的特点，但《格列佛游记》是以其杰出的讽刺而垂名世界文学史的，而斯威夫特的大名，至少在英国讽刺作家中，至今仍罕有其匹。也实在是斯威夫特的手段太高明了，把那些乌有之邦的故事讲得煞有介事，连最容易被人忽视的细节也描写得一丝不苟，以致近三百年来多少读者只贪婪地享受书中那异想天开的情节和横生的妙趣……", <br>
-    "id": 1,<br>
-    "uniqueKey": "a52408b2792f1fa560f248a42f2bf50d",<br>
-    "titleUkey": "3ebac85a97fa2c94aa79ca71491171ae",<br>
+    "dataType": "zh-books", 
+    "title ": "格列佛游记", 
+    "content ": "格列佛游记 前言一不论是不是真正读过，或者通读过，大约谁都知道《格列佛游记》是一部世界名著。在中国读者中，乔纳森·斯威夫特的名字或者不如莎士比亚、狄更斯、萧伯纳来得响亮，可是他的“小人国”、“大人国”的故事倒差不多称得上家喻户晓了。我记得十多年前中学英语的课本上好像就有过“小人国”游记的节选，当然是简写过的。这么一来，在“家喻户晓”的同时，《格列佛游记》在一般人的心中仿佛成了一本儿童读物。那么到底是不是呢？如果不是，它究竟又是怎样的一部书？《格列佛游记》是一部奇书，但我不同意有些评论家的观点，认为这是一本“儿童读物”。神奇的想象，夸张的手段，寓言的笔法（第四卷），固然是一般儿童读物普遍的特点，但《格列佛游记》是以其杰出的讽刺而垂名世界文学史的，而斯威夫特的大名，至少在英国讽刺作家中，至今仍罕有其匹。也实在是斯威夫特的手段太高明了，把那些乌有之邦的故事讲得煞有介事，连最容易被人忽视的细节也描写得一丝不苟，以致近三百年来多少读者只贪婪地享受书中那异想天开的情节和横生的妙趣……", 
+    "id": 1,
+    "uniqueKey": "a52408b2792f1fa560f248a42f2bf50d",
+    "titleUkey": "3ebac85a97fa2c94aa79ca71491171ae"
 }
+```
 <br>
 =======
 
