@@ -3,7 +3,7 @@
 
 
 # ChatGLM-6B 全套微调代码，经过两周对ChatGLM-6B的指令微调，两条经验如下：<br>
-1. glm-6B是经过SFT和RLHF后的版本，再次微调不够友好<br>
+1. glm-6B是经过SFT和RLHF后的版本,另外sft模板未开放，再次微调不够友好<br>
 2. 需要在一个干净的纯基座模型上进行微调（SFT），使用高质量的业务指令数据；RLHF，是一个难题，需要一个高质量的reward model，目前正确的rlhf pipeline比较稀少，训练出来好的效果也是一个挑战。<br>
 
 
