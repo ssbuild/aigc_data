@@ -12,10 +12,10 @@
 
  If you like the project, please show your support by leaving a star ⭐.
 
- | No. |Projects |                        URL                        | Comments |
- |-----| :-----------:  |:-------------------------------------------------:| :-----------:|
- | 1   |悟道 200G文本 | https://data.baai.ac.cn/details/WuDaoCorporaText  | 
- | 2   |Pile, 1.3T的英文数据|             https://pile.eleuther.ai/             | 需要强力清洗  | 
+ | No. |Projects |                        URL                        | Comments | secret |
+ |-----| :-----------:  |:-------------------------------------------------:|:--------:|:------:| 
+ | 1   |悟道 200G文本 | https://data.baai.ac.cn/details/WuDaoCorporaText  |     | 不需要秘钥 |
+ | 2   |Pile, 1.3T的英文数据|             https://pile.eleuther.ai/             |  需要强力清洗  | 不需要秘钥  |
 
 
 # 可下载的开源数据集
