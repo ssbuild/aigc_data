@@ -1,21 +1,21 @@
 
 
-#  打造一个数据共享生态 
+##  打造一个数据共享生态 
 
 
 
 
-# 一、 有多少人工，才有多少智能，从0到1构建预训练大语言模型
+## 一、 有多少人工，才有多少智能，从0到1构建预训练大语言模型
     搜集开源数据收集、构造，清洗方法，包括预训练数据和指令数据<br>
 
 
-# 二、 ChatGLM-6B 全套微调代码，经过两周对ChatGLM-6B的指令微调，两条经验如下：<br>
+## 二、 ChatGLM-6B 全套微调代码，经过两周对ChatGLM-6B的指令微调，两条经验如下：<br>
 1. glm-6B是经过SFT和RLHF后的版本,另外sft模板未开放，再次微调不够友好<br>
 2. 需要在一个干净的纯基座模型上进行微调（SFT），使用高质量的业务指令数据；RLHF，是一个难题，需要一个高质量的reward model，目前正确的rlhf pipeline比较稀少，训练出来好的效果也是一个挑战。<br>
 
 
 
-# 三、 Open-data for LLMs 
+## 三、 Open-data for LLMs 
 
  If you like the project, please show your support by leaving a star ⭐.
 
@@ -26,8 +26,8 @@
  | 3    | [Tigerbot 中文开源预训练集 - 55G](https://huggingface.co/datasets/TigerResearch/pretrain_zh/tree/main) |             |  不需要秘钥  |
 
 
-# 四、数据概述
-## 1.悟道 - 200G文本  
+## 四、数据概述
+### 1.悟道 - 200G文本  
 下载链接：https://data.baai.ac.cn/details/WuDaoCorporaText  
 数据格式：
 ```json
@@ -42,7 +42,7 @@
 ```
 <br>
 
-## 2. Pile - 1.3T的英文数据, 需要强力清洗  
+### 2. Pile - 1.3T的英文数据, 需要强力清洗  
 下载链接 https://pile.eleuther.ai/  
 数据格式：  
 ```json
@@ -53,7 +53,7 @@
 <br>
 =======
 
-## 3. Tigerbot 中文开源预训练集 <br>
+### 3. Tigerbot 中文开源预训练集 <br>
 下载链接: https://huggingface.co/datasets/TigerResearch/pretrain_zh/tree/main <br>
 数据格式：<br>
 ```json
