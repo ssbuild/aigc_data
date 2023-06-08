@@ -1,14 +1,14 @@
-# 有多少人工，才有多少智能，从0到1构建预训练大语言模型
+# 一、 有多少人工，才有多少智能，从0到1构建预训练大语言模型
     搜集开源数据收集、构造，清洗方法，包括预训练数据和指令数据<br>
 
 
-# ChatGLM-6B 全套微调代码，经过两周对ChatGLM-6B的指令微调，两条经验如下：<br>
+# 二、 ChatGLM-6B 全套微调代码，经过两周对ChatGLM-6B的指令微调，两条经验如下：<br>
 1. glm-6B是经过SFT和RLHF后的版本,另外sft模板未开放，再次微调不够友好<br>
 2. 需要在一个干净的纯基座模型上进行微调（SFT），使用高质量的业务指令数据；RLHF，是一个难题，需要一个高质量的reward model，目前正确的rlhf pipeline比较稀少，训练出来好的效果也是一个挑战。<br>
 
 
 
-# Open-data for LLMs 
+# 三、 Open-data for LLMs 
 
  If you like the project, please show your support by leaving a star ⭐.
 
@@ -19,7 +19,7 @@
  | 3    | [Tigerbot 中文开源预训练集 - 55G](https://huggingface.co/datasets/TigerResearch/pretrain_zh/tree/main) |             |  不需要秘钥  |
 
 
-# 可下载的开源数据集
+# 四、数据概述
 ## 1.悟道 - 200G文本  
 下载链接：https://data.baai.ac.cn/details/WuDaoCorporaText  
 数据格式：
@@ -62,7 +62,7 @@
 <br>
 =======
 
-## 数据质量6大标准
+## 五、数据质量6大标准
 
 数据质量公认的六大评价标准为：完整性、有效性、及时性、一致性、准确性、唯一性。
 
@@ -92,7 +92,7 @@
 
 数据的完整性是从数据采集到的程度来衡量的，是应采集和实际采集到数据之间的比例。指的是数据信息是否存在缺失的情况，数据缺失的情况可能是整个数据记载缺失，也可能是数据中某个字段信息的记载缺失。一个公司数据的完整性体现着这个公司对数据的重视程度。
 
-## 数据清洗九大方法
+## 六、数据清洗九大方法
    
 清理数据的基础知识
 ```text
