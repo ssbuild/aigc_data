@@ -12,16 +12,17 @@ parser.add_argument('--input', type=str,default=None ,help='输入文件路径')
 parser.add_argument('--output', type=str,default=None, help='输出文件路径')
 parser.add_argument('--user', type=str,default="", help='用户名')
 parser.add_argument('--method', type=str,default='', help='one of upload download list query or empty')
-parser.add_argument('--dataset_name', type=str,default='', help='download dataset_name')
+parser.add_argument('--dataset_name', type=str,default='', help='dataset_name')
+parser.add_argument('--dataset_desc', type=str,default='', help='')
+parser.add_argument('--dataset_type', type=str,default='', help='')
 
 args = parser.parse_args()
 
 def make_dataset(args):
     data_meta = {
-        'dataset_name': 'test',
+        'dataset_name': args.dataset_name,
         'dataset_desc': '测试数据',
         'dataset_type': 'text',  # text , json , html , csv
-        'dataset_column': '',  # json or csv 列  逗号 分割
         'dataset_one_sample': '',  # 会自动更新
         'dataset_count': 0,  # 会自动更新
         'dataset_hash': '',  # 会自动更新

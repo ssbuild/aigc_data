@@ -46,7 +46,6 @@ class DataReaderWriter:
         #     'dataset_desc': '测试数据',
         #     'dataset_one_sample': '你是谁',
         #     'dataset_type': 'text',  # text , json , html , csv
-        #     'dataset_column': '',  # json or csv 列  逗号 分割
         #     'dataset_count': 0,  # 会自动更新
         #     'dataset_hash': '',  # 会自动更新
         # }
