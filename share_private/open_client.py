@@ -12,24 +12,19 @@ from fastdatasets.record import load_dataset as Loader,gfile,RECORD,DataType,Byt
 import fastcrypto
 import pickle
 import hashlib
+from config import global_args
 
-# ,key,iv  length must 16
-# aes 256
-# key iv 元素取值范围 0-255  一共有 256 的 16次方 * 256 的 16次方 种秘钥
-
-key = bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-iv = bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
 
 class Encrypt:
     @staticmethod
-    def encode_data(data: bytes,key=key,iv=iv):
+    def encode_data(data: bytes,key=global_args['key'],iv=global_args['iv']):
         ret = fastcrypto.aes_encode(data, key, iv)
         assert ret[0] == 0
         crypt_data = ret[1]
         return crypt_data
 
     @staticmethod
-    def decode_data(data: bytes,key=key,iv=iv):
+    def decode_data(data: bytes,key=global_args['key'],iv=global_args['iv']):
         ret = fastcrypto.aes_decode(data, key, iv)
         assert ret[0] == 0
         return ret[1]
@@ -42,6 +37,7 @@ class Encrypt:
 
     @staticmethod
     def encode_password(password):
+        # 密码秘钥，不需要修改
         key = bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
         iv = bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
         password = Encrypt.hash_md5(Encrypt.encode_data(bytes(password,encoding='utf-8'), key=key, iv=iv))
@@ -65,8 +61,10 @@ class DataReaderWriter:
         #     'dataset_desc': '测试数据',
         #     'dataset_one_sample': '你是谁',
         #     'dataset_type': 'text',  # text , json , html , csv
-        #     'dataset_count': 0,  # 会自动更新
-        #     'dataset_hash': '',  # 会自动更新
+        #     'dataset_count': 0,  # 自动更新
+        #     'dataset_hash': '',  # 自动更新
+        #     'key': bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]), # 自动更新
+        #     'iv': bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]),, # 自动更新
         # }
 
         assert data_meta['dataset_type'] in ['text' , 'json' , 'html' , 'csv']
@@ -90,6 +88,8 @@ class DataReaderWriter:
         hash = DataReaderWriter.md5(dst_file)
         data_meta['dataset_count'] = num
         data_meta['dataset_hash'] = hash
+        data_meta['key'] = global_args['key']
+        data_meta['iv'] = global_args['iv']
 
     @staticmethod
     def read(filename,limit = 10, compression_type='GZIP'):

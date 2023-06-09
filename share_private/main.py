@@ -3,7 +3,7 @@
 # @Time    : 2023/6/8 10:43
 
 import argparse
-import os.path
+import os
 
 from open_client import DataReaderWriter,OpenDataCient
 parser = argparse.ArgumentParser(description='')
@@ -14,7 +14,7 @@ parser.add_argument('--method', type=str,default='', help='one of upload downloa
 parser.add_argument('--dataset_name', type=str,default='', help='dataset_name')
 parser.add_argument('--dataset_desc', type=str,default='', help='')
 parser.add_argument('--dataset_type', type=str,default='', help='')
-from config import user_info
+from config import user_info, global_args
 
 args = parser.parse_args()
 
@@ -26,6 +26,8 @@ def make_dataset(args):
         'dataset_one_sample': '',  # 会自动更新
         'dataset_count': 0,  # 会自动更新
         'dataset_hash': '',  # 会自动更新
+        'key': global_args['key'], # 自动更新
+        'iv': global_args['iv'], # 自动更新
     }
 
     input_file = args.input
@@ -50,6 +52,8 @@ if __name__ == '__main__':
     data_meta = None
     if args.input:
         data_meta = make_dataset(args)
+
+        print(data_meta)
 
     if args.method in ['upload','download','list']:
         # 认证
