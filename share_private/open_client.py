@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author  : ssbuild
 # @Time    : 2023/6/9 11:38
+import base64
+import copy
 import os.path
 import socket
 import fastcrypto
@@ -17,30 +19,47 @@ import hashlib
 
 key = bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
 iv = bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-def encode_data(data: bytes):
-    ret = fastcrypto.aes_encode(data, key, iv)
-    assert ret[0] == 0
-    crypt_data = ret[1]
-    return crypt_data
 
-def decode_data(data: bytes):
-    ret = fastcrypto.aes_decode(data, key, iv)
-    assert ret[0] == 0
-    return ret[1]
+class Encrypt:
+    @staticmethod
+    def encode_data(data: bytes,key=key,iv=iv):
+        ret = fastcrypto.aes_encode(data, key, iv)
+        assert ret[0] == 0
+        crypt_data = ret[1]
+        return crypt_data
 
+    @staticmethod
+    def decode_data(data: bytes,key=key,iv=iv):
+        ret = fastcrypto.aes_decode(data, key, iv)
+        assert ret[0] == 0
+        return ret[1]
+
+    @staticmethod
+    def hash_md5(d):
+        m = hashlib.md5()
+        m.update(d)
+        return (m.hexdigest())
+
+    @staticmethod
+    def encode_password(password):
+        key = bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        iv = bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        password = Encrypt.hash_md5(Encrypt.encode_data(bytes(password,encoding='utf-8'), key=key, iv=iv))
+        password = bytes(password,encoding='utf-8')
+        password = base64.b64encode(password)
+        password = str(password,encoding='utf-8')
+        return password
 
 class DataReaderWriter:
     @staticmethod
     def md5(filename):
         with open(filename,mode='rb') as f:
             d = f.read()
-        m = hashlib.md5()
-        m.update(d)
-        return (m.hexdigest())
+        return Encrypt.hash_md5(d)
 
     @staticmethod
     def write(data_meta, src_file, dst_file, compression_type='GZIP'):
-        print('write', '==' * 30)
+        print('\n' * 3,'write', '==' * 30,'\n' * 3,)
         # data_meta = {
         #     'dataset_name': 'test',
         #     'dataset_desc': '测试数据',
@@ -51,7 +70,6 @@ class DataReaderWriter:
         # }
 
         assert data_meta['dataset_type'] in ['text' , 'json' , 'html' , 'csv']
-
         num = 0
         with open(src_file, mode='r', encoding='utf-8', newline='\n') as f:
             lines = f.readlines()
@@ -65,7 +83,7 @@ class DataReaderWriter:
                 if num == 1:
                     data_meta['dataset_one_sample'] = line
 
-                data = encode_data(bytes(line, encoding='utf-8'))
+                data = Encrypt.encode_data(bytes(line, encoding='utf-8'))
                 writer.write(data)
             writer.close()
 
@@ -78,31 +96,37 @@ class DataReaderWriter:
 
     @staticmethod
     def read(filename,limit = 10, compression_type='GZIP'):
-        print('read','==' * 30)
+        print('\n' * 3,'read','==' * 30,'\n' * 3,)
         options = RECORD.TFRecordOptions(compression_type=compression_type)
         dataset = Loader.IterableDataset(filename, options=options)
         for i,d in enumerate(dataset):
             if i >= limit:
                 break
-            string = str(decode_data(d), encoding='utf-8')
+            string = str(Encrypt.decode_data(d), encoding='utf-8')
             print(string)
         dataset.close()
 
-class OpenDataCient:
-    def __init__(self,user):
-        assert isinstance(user,str)
-        assert len(user) > 0
 
+
+
+class OpenDataCient:
+    def __init__(self,user_info):
+        self.user_info = copy.deepcopy(user_info)
+        password = self.user_info['password']
+        password = Encrypt.encode_password(password)
+        self.user_info['password'] = password
+        print('\n' * 3,'*** user info ***','\n',self.user_info,'\n' * 3)
         ip = self._resolve_domain('tx.ssdog.cn')
         assert len(ip) > 0
         self.ip = ip[0]
         self.port = 8088
-        self.user = user
 
         self._token_url = 'http://{}:{}/get_token'.format(self.ip, self.port)
         self._push_dataset_url = 'http://{}:{}/push_dataset'.format(self.ip, self.port)
         self._pull_dataset_url = 'http://{}:{}/pull_dataset'.format(self.ip, self.port)
         self._list_dataset_url = 'http://{}:{}/list_dataset'.format(self.ip, self.port)
+
+        self._token = None
 
     def _resolve_domain(self,domain):
         ip_list = []
@@ -115,21 +139,21 @@ class OpenDataCient:
             print(e)
         return ip_list
 
-    # 注册token ， 如果绑定的用户已存在，返回绑定的token ， 否则生成新token
-    def get_token(self):
+    # 认证成功获取token
+    def auth(self):
         data = {
-            'user': self.user
+            **self.user_info,
         }
         r = requests.post(self._token_url, data=data)
         r = r.json()
         token = r['result']
         return token
 
-    def push_dataset(self,token,**kwargs):
+    def push_dataset(self,**kwargs):
         assert len(kwargs)
         data = {
-            'user': self.user,
-            'token': token,
+            **self.user_info,
+            'token': self._token,
              **kwargs
         }
         r = requests.post(self._push_dataset_url, data=data)
@@ -138,12 +162,12 @@ class OpenDataCient:
             return None
         return 0
 
-    def pull_dataset(self,token, dataset_name):
+    def pull_dataset(self, dataset_name):
         if not isinstance(dataset_name,list):
             dataset_name = [dataset_name]
         data = {
-            'user': self.user,
-            'token': token,
+             **self.user_info,
+            'token': self._token,
             'dataset_name': dataset_name,
         }
         r = requests.post(self._pull_dataset_url, data=data)
@@ -152,10 +176,10 @@ class OpenDataCient:
             return None
         return r['result']
 
-    def list_dataset(self,token):
+    def list_dataset(self):
         data = {
-            'user': self.user,
-            'token': token,
+             **self.user_info,
+            'token': self._token,
         }
         r = requests.post(self._list_dataset_url, data=data)
         r = r.json()

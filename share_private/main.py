@@ -15,6 +15,7 @@ parser.add_argument('--method', type=str,default='', help='one of upload downloa
 parser.add_argument('--dataset_name', type=str,default='', help='dataset_name')
 parser.add_argument('--dataset_desc', type=str,default='', help='')
 parser.add_argument('--dataset_type', type=str,default='', help='')
+from config import user_info
 
 args = parser.parse_args()
 
@@ -43,30 +44,28 @@ def make_dataset(args):
 if __name__ == '__main__':
 
     args = parser.parse_args()
+
+    uClient = OpenDataCient(user_info)
+
     #制作数据
     data_meta = None
     if args.input:
         data_meta = make_dataset(args)
 
-
-
     if args.user:
-        uClient = OpenDataCient(user=args.user)
-
-        # 获取id
-        token_uuid = uClient.get_token()
-
+        # 认证
+        uClient.auth()
         #upload download list query
         if args.method == 'upload':
             assert data_meta is not None
             # 上传
-            uClient.push_dataset(token_uuid,**data_meta)
+            uClient.push_dataset(**data_meta)
 
         elif args.method == 'download':
             # 获取其他数据集信息
-            new_data_meta = uClient.pull_dataset(token_uuid, dataset_name=args.dataset_name)
+            new_data_meta = uClient.pull_dataset(dataset_name=args.dataset_name)
             print(new_data_meta)
         elif args.method == 'list':
             # 查看列表
-            print(uClient.list_dataset(token_uuid))
+            print(uClient.list_dataset())
 

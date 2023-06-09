@@ -1,5 +1,8 @@
 ## 非开放数据分享
 
+## 用户配置信息
+    config.py
+
 ##  制作数据集
 
     - text 格式
@@ -16,12 +19,12 @@
 
 ##  制作并上传数据集
 
-    python main.py --user admin --method upload --input=./input.txt --output=./outputs/output.record --dataset_type=text  --dataset_name=test数据集 --dataset_desc=test
+    python main.py --method upload --input=./input.txt --output=./outputs/output.record --dataset_type=text  --dataset_name=test数据集 --dataset_desc=test
 
 ##  下载数据集信息
 
-    python main.py --user admin --method download --dataset_name test
+    python main.py --method download --dataset_name test
 
 ##  查看列表
 
-    python main.py --user admin --method list 
+    python main.py --method list 
