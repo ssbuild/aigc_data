@@ -10,8 +10,7 @@ parser = argparse.ArgumentParser(description='')
 
 parser.add_argument('--input', type=str,default=None ,help='输入文件路径')
 parser.add_argument('--output', type=str,default=None, help='输出文件路径')
-parser.add_argument('--user', type=str,default="", help='用户名')
-parser.add_argument('--method', type=str,default='', help='one of upload download list query or empty')
+parser.add_argument('--method', type=str,default='', help='one of upload download list or empty')
 parser.add_argument('--dataset_name', type=str,default='', help='dataset_name')
 parser.add_argument('--dataset_desc', type=str,default='', help='')
 parser.add_argument('--dataset_type', type=str,default='', help='')
@@ -52,14 +51,16 @@ if __name__ == '__main__':
     if args.input:
         data_meta = make_dataset(args)
 
-    if args.user:
+    if args.method in ['upload','download','list']:
         # 认证
         uClient.auth()
-        #upload download list query
+
         if args.method == 'upload':
             assert data_meta is not None
             # 上传
-            uClient.push_dataset(**data_meta)
+            code = uClient.push_dataset(**data_meta)
+
+            print('upload code = ',code)
 
         elif args.method == 'download':
             # 获取其他数据集信息
