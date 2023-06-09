@@ -38,7 +38,7 @@ class Encrypt:
     def hash_md5(d):
         m = hashlib.md5()
         m.update(d)
-        return (m.hexdigest())
+        return m.hexdigest()
 
     @staticmethod
     def encode_password(password):
@@ -90,9 +90,6 @@ class DataReaderWriter:
         hash = DataReaderWriter.md5(dst_file)
         data_meta['dataset_count'] = num
         data_meta['dataset_hash'] = hash
-        # meta_file = dst_file + '.meta'
-        # with open(meta_file,mode='wb') as f:
-        #     pickle.dump(data_meta,f)
 
     @staticmethod
     def read(filename,limit = 10, compression_type='GZIP'):
