@@ -2,13 +2,21 @@
 # @Author  : ssbuild
 # @Time    : 2023/6/8 10:43
 
+import argparse
+import os.path
+
 from open_client import DataReaderWriter,OpenDataCient
+parser = argparse.ArgumentParser(description='')
 
+parser.add_argument('--input', type=str,default=None ,help='输入文件路径')
+parser.add_argument('--output', type=str,default=None, help='输出文件路径')
+parser.add_argument('--user', type=str,default="", help='用户名')
+parser.add_argument('--method', type=str,default='', help='one of upload download list query or empty')
+parser.add_argument('--dataset_name', type=str,default='', help='download dataset_name')
 
+args = parser.parse_args()
 
-
-
-def make_dataset():
+def make_dataset(args):
     data_meta = {
         'dataset_name': 'test',
         'dataset_desc': '测试数据',
@@ -19,34 +27,45 @@ def make_dataset():
         'dataset_hash': '',  # 会自动更新
     }
 
-    DataReaderWriter.write(data_meta, './input.txt', './input.record')
+    input_file = args.input
+    output_file = args.output
 
-
+    outdir = os.path.dirname(output_file)
+    if not os.path.exists(os.path.dirname(outdir)):
+        os.mkdir(outdir)
+    DataReaderWriter.write(data_meta, input_file, output_file)
     # 查看前10条
-    DataReaderWriter.read('./input.record', limit=10)
-
+    DataReaderWriter.read(output_file, limit=10)
     return data_meta
 
 
 if __name__ == '__main__':
+
+    args = parser.parse_args()
     #制作数据
-    data_meta = make_dataset()
+    data_meta = None
+    if args.input:
+        data_meta = make_dataset(args)
 
-    print(data_meta)
 
-    # #上传信息
-    # upClient = OpenDataCient(user='default')
-    #
-    # ## 获取id
-    # token_uuid = upClient.new_token()
-    #
-    # # 上传信息
-    # upClient.pull_dataset(token_uuid,**data_meta)
-    #
-    #
-    #
-    # # 查看列表
-    # print(upClient.list_dataset(token_uuid))
-    #
-    # # 获取其他数据集信息
-    # new_data_meta = upClient.pull_dataset(token_uuid,dataset_name='test')
+
+    if args.user:
+        uClient = OpenDataCient(user=args.user)
+
+        # 获取id
+        token_uuid = uClient.get_token()
+
+        #upload download list query
+        if args.method == 'upload':
+            assert data_meta is not None
+            # 上传
+            uClient.push_dataset(token_uuid,**data_meta)
+
+        elif args.method == 'download':
+            # 获取其他数据集信息
+            new_data_meta = uClient.pull_dataset(token_uuid, dataset_name=args.dataset_name)
+            print(new_data_meta)
+        elif args.method == 'list':
+            # 查看列表
+            print(uClient.list_dataset(token_uuid))
+

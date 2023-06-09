@@ -1,2 +1,3 @@
 /.idea
 /share_private/*.record
+/share_private/__pycache__

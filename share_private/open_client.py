@@ -30,8 +30,6 @@ def decode_data(data: bytes):
 
 
 class DataReaderWriter:
-
-
     @staticmethod
     def md5(filename):
         with open(filename,mode='rb') as f:
@@ -42,7 +40,7 @@ class DataReaderWriter:
 
     @staticmethod
     def write(data_meta, src_file, dst_file, compression_type='GZIP'):
-
+        print('write', '==' * 30)
         # data_meta = {
         #     'dataset_name': 'test',
         #     'dataset_desc': '测试数据',
@@ -75,12 +73,13 @@ class DataReaderWriter:
         hash = DataReaderWriter.md5(dst_file)
         data_meta['dataset_count'] = num
         data_meta['dataset_hash'] = hash
-        meta_file = dst_file + '.meta'
-        with open(meta_file,mode='wb') as f:
-            pickle.dump(data_meta,f)
+        # meta_file = dst_file + '.meta'
+        # with open(meta_file,mode='wb') as f:
+        #     pickle.dump(data_meta,f)
 
     @staticmethod
     def read(filename,limit = 10, compression_type='GZIP'):
+        print('read','==' * 30)
         options = RECORD.TFRecordOptions(compression_type=compression_type)
         dataset = Loader.IterableDataset(filename, options=options)
         for i,d in enumerate(dataset):
@@ -101,10 +100,10 @@ class OpenDataCient:
         self.port = 8088
         self.user = user
 
-        self.token_url = 'http://{}:{}/new_token'.format(self.ip, self.port)
-        self.push_dataset_url = 'http://{}:{}/push_dataset'.format(self.ip, self.port)
-        self.pull_dataset_url = 'http://{}:{}/pull_dataset'.format(self.ip, self.port)
-        self.list_dataset_url = 'http://{}:{}/list_dataset'.format(self.ip, self.port)
+        self._token_url = 'http://{}:{}/get_token'.format(self.ip, self.port)
+        self._push_dataset_url = 'http://{}:{}/push_dataset'.format(self.ip, self.port)
+        self._pull_dataset_url = 'http://{}:{}/pull_dataset'.format(self.ip, self.port)
+        self._list_dataset_url = 'http://{}:{}/list_dataset'.format(self.ip, self.port)
 
     def _resolve_domain(self,domain):
         ip_list = []
@@ -117,23 +116,24 @@ class OpenDataCient:
             print(e)
         return ip_list
 
-    # 注册token
-    def new_token(self):
+    # 注册token ， 如果绑定的用户已存在，返回绑定的token ， 否则生成新token
+    def get_token(self):
         data = {
             'user': self.user
         }
-        r = requests.post(self.token_url, data=data)
+        r = requests.post(self._token_url, data=data)
         r = r.json()
         token = r['result']
         return token
 
     def push_dataset(self,token,**kwargs):
+        assert len(kwargs)
         data = {
             'user': self.user,
             'token': token,
              **kwargs
         }
-        r = requests.post(self.push_dataset_url, data=data)
+        r = requests.post(self._push_dataset_url, data=data)
         r = r.json()
         if r['code'] != 0:
             return None
@@ -147,7 +147,7 @@ class OpenDataCient:
             'token': token,
             'dataset_name': dataset_name,
         }
-        r = requests.post(self.pull_dataset_url, data=data)
+        r = requests.post(self._pull_dataset_url, data=data)
         r = r.json()
         if r['code'] != 0:
             return None
@@ -158,7 +158,7 @@ class OpenDataCient:
             'user': self.user,
             'token': token,
         }
-        r = requests.post(self.list_dataset_url, data=data)
+        r = requests.post(self._list_dataset_url, data=data)
         r = r.json()
         if r['code'] != 0:
             return None
