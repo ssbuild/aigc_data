@@ -123,6 +123,7 @@ class OpenDataCient:
         self._pull_dataset_url = 'http://{}:{}/pull_dataset'.format(self.ip, self.port)
         self._list_dataset_url = 'http://{}:{}/list_dataset'.format(self.ip, self.port)
 
+        # 认证成功返回会话id
         self._session = None
 
     def _resolve_domain(self,domain):
@@ -143,8 +144,8 @@ class OpenDataCient:
         }
         r = requests.post(self._auth_url, data=data)
         r = r.json()
-        token = r['result']
-        return token
+        self._session = r['result']
+        return self._session
 
     def push_dataset(self,**kwargs):
         assert len(kwargs)
