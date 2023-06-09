@@ -22,8 +22,8 @@ args = parser.parse_args()
 def make_dataset(args):
     data_meta = {
         'dataset_name': args.dataset_name,
-        'dataset_desc': '测试数据',
-        'dataset_type': 'text',  # text , json , html , csv
+        'dataset_desc': args.dataset_desc,
+        'dataset_type':  args.dataset_type,  # text , json , html , csv
         'dataset_one_sample': '',  # 会自动更新
         'dataset_count': 0,  # 会自动更新
         'dataset_hash': '',  # 会自动更新
