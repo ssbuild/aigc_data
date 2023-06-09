@@ -16,7 +16,7 @@
 
 ##  制作并上传数据集
 
-    python main.py --user admin --method upload --input ./input.txt --output ./outputs/output.record
+    python main.py --user admin --method upload --input=./input.txt --output=./outputs/output.record --dataset_type=text  --dataset_name=test数据集 --dataset_desc=test
 
 ##  下载数据集信息
 
