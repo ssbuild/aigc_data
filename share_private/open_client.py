@@ -151,7 +151,7 @@ class OpenDataCient:
         assert len(kwargs)
         data = {
             'user': self.user_info['user'],
-            'token': self._session,
+            'session': self._session,
              **kwargs
         }
         r = requests.post(self._push_dataset_url, data=data)
@@ -165,7 +165,7 @@ class OpenDataCient:
             dataset_name = [dataset_name]
         data = {
             'user': self.user_info['user'],
-            'token': self._session,
+            'session': self._session,
             'dataset_name': dataset_name,
         }
         r = requests.post(self._pull_dataset_url, data=data)
@@ -177,7 +177,7 @@ class OpenDataCient:
     def list_dataset(self):
         data = {
             'user': self.user_info['user'],
-            'token': self._session,
+            'session': self._session,
         }
         r = requests.post(self._list_dataset_url, data=data)
         r = r.json()
