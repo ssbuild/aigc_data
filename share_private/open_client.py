@@ -118,12 +118,12 @@ class OpenDataCient:
         self.ip = ip[0]
         self.port = 8088
 
-        self._token_url = 'http://{}:{}/get_token'.format(self.ip, self.port)
+        self._auth_url = 'http://{}:{}/auth'.format(self.ip, self.port)
         self._push_dataset_url = 'http://{}:{}/push_dataset'.format(self.ip, self.port)
         self._pull_dataset_url = 'http://{}:{}/pull_dataset'.format(self.ip, self.port)
         self._list_dataset_url = 'http://{}:{}/list_dataset'.format(self.ip, self.port)
 
-        self._token = None
+        self._session = None
 
     def _resolve_domain(self,domain):
         ip_list = []
@@ -141,7 +141,7 @@ class OpenDataCient:
         data = {
             **self.user_info,
         }
-        r = requests.post(self._token_url, data=data)
+        r = requests.post(self._auth_url, data=data)
         r = r.json()
         token = r['result']
         return token
@@ -149,8 +149,8 @@ class OpenDataCient:
     def push_dataset(self,**kwargs):
         assert len(kwargs)
         data = {
-            **self.user_info,
-            'token': self._token,
+            'user': self.user_info['user'],
+            'token': self._session,
              **kwargs
         }
         r = requests.post(self._push_dataset_url, data=data)
@@ -163,8 +163,8 @@ class OpenDataCient:
         if not isinstance(dataset_name,list):
             dataset_name = [dataset_name]
         data = {
-             **self.user_info,
-            'token': self._token,
+            'user': self.user_info['user'],
+            'token': self._session,
             'dataset_name': dataset_name,
         }
         r = requests.post(self._pull_dataset_url, data=data)
@@ -175,8 +175,8 @@ class OpenDataCient:
 
     def list_dataset(self):
         data = {
-             **self.user_info,
-            'token': self._token,
+            'user': self.user_info['user'],
+            'token': self._session,
         }
         r = requests.post(self._list_dataset_url, data=data)
         r = r.json()
