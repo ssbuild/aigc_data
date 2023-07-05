@@ -28,8 +28,10 @@ def test_write(in_files,outfile, compression_type='GZIP'):
             batch.append(jd)
             if len(batch) % N == 0:
                 writer.write_batch(batch)
+                batch.clear()
         if len(batch):
             writer.write(batch)
+            batch.clear()
     writer.close()
 
 
