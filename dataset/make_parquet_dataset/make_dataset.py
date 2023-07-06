@@ -51,11 +51,13 @@ def test_write(in_files,outfile):
                 batch['input'].append('')
 
             if len(batch["id"]) % N == 0:
-                fs.write_batch(batch.keys(), batch.values())
+                status = fs.write_batch(batch.keys(), batch.values())
+                assert status.ok(),status.message()
                 for k,v in batch.items():
                     v.clear()
         if len(batch["id"]):
-            fs.write_batch(batch.keys(), batch.values())
+            status = fs.write_batch(batch.keys(), batch.values())
+            assert status.ok(), status.message()
             for k, v in batch.items():
                 v.clear()
     fs.close()

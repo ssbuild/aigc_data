@@ -30,7 +30,7 @@ def test_write(in_files,outfile, compression_type='GZIP'):
                 writer.write_batch(batch)
                 batch.clear()
         if len(batch):
-            writer.write(batch)
+            writer.write_batch(batch)
             batch.clear()
     writer.close()
 
