@@ -74,12 +74,12 @@ def test_random(file):
 if __name__ == '__main__':
 
     in_files = [
-        (gfile.glob(r'D:\cxx_project\alpaca_chinese_dataset\原始英文数据\*.json'),
-         r'D:\cxx_project\alpaca_chinese_dataset\english.parquet'),
-        (gfile.glob(r'D:\cxx_project\alpaca_chinese_dataset\翻译后的中文数据\*.json'),
-         r'D:\cxx_project\alpaca_chinese_dataset\chinese.parquet'),
-        (gfile.glob(r'D:\cxx_project\alpaca_chinese_dataset\其他中文问题补充\*.json'),
-         r'D:\cxx_project\alpaca_chinese_dataset\other_chinese.parquet'),
+        (gfile.glob(r'../alpaca_chinese_dataset/原始英文数据/*.json'),
+         r'../alpaca_chinese_dataset/english.parquet'),
+        (gfile.glob(r'../alpaca_chinese_dataset/翻译后的中文数据/*.json'),
+         r'../alpaca_chinese_dataset/chinese.parquet'),
+        (gfile.glob(r'../alpaca_chinese_dataset/其他中文问题补充/*.json'),
+         r'../alpaca_chinese_dataset/other_chinese.parquet'),
     ]
     for files,outfile in in_files:
         test_write(files,outfile)
