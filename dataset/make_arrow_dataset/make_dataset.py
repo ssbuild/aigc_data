@@ -13,6 +13,7 @@ from fastdatasets import gfile
 
 with_stream = False
 def test_write(in_files,outfile):
+    #获取json文件数据
     all_data = []
     for file in in_files:
         with open(file,mode='r',encoding='utf-8') as f:
@@ -21,7 +22,7 @@ def test_write(in_files,outfile):
 
             jds = json.loads(f.read())
             all_data.append((os.path.basename(file),jds))
-
+    #构建schema
     schema = {
         'id': 'int32',
         'instruction': 'str',
@@ -29,6 +30,7 @@ def test_write(in_files,outfile):
         'output': 'str',
         'file': 'str',
     }
+    #创建文件
     fs = PythonWriter(outfile,schema=schema,with_stream=with_stream,options=None)
 
     N = 1000
@@ -39,12 +41,14 @@ def test_write(in_files,outfile):
             batch["file"].append(file)
 
             for k,v in jd.items():
+                # 在本数据集中，为无效字段 脏数据，直接扔掉
                 if k == 'history':
                     continue
                 batch[k].append(v)
+            # 在本数据集中，input 可能不存在
             if 'input' not in jd:
                 batch['input'].append('')
-
+            #数据积攒到N ，同步磁盘文件
             if len(batch["id"]) % N == 0:
                 status = fs.write_batch(batch.keys(), batch.values())
                 assert status.ok(), status.message()
