@@ -71,14 +71,12 @@ def test_random(file):
 
 if __name__ == '__main__':
 
+    base_dir = r'../alpaca_chinese_dataset'
     in_files = [
-        (gfile.glob(r'../alpaca_chinese_dataset/原始英文数据/*.json'),
-         r'../alpaca_chinese_dataset/english.arrow_stream'),
-        (gfile.glob(r'../alpaca_chinese_dataset/翻译后的中文数据/*.json'),
-         r'../alpaca_chinese_dataset/chinese.arrow_stream'),
-        (gfile.glob(r'../alpaca_chinese_dataset/其他中文问题补充/*.json'),
-         r'../alpaca_chinese_dataset/other_chinese.arrow_stream'),
+        (gfile.glob(os.path.join(base_dir, '原始英文数据/*.json')), os.path.join(base_dir, 'english.arrow_stream')),
+        (gfile.glob(os.path.join(base_dir, '翻译后的中文数据/*.json')), os.path.join(base_dir, 'chinese.arrow_stream')),
+        (gfile.glob(os.path.join(base_dir, '其他中文问题补充/*.json')), os.path.join(base_dir, 'other_chinese.arrow_stream')),
     ]
-    for files,outfile in in_files:
-        test_write(files,outfile)
+    for files, outfile in in_files:
+        test_write(files, outfile)
         test_random(outfile)

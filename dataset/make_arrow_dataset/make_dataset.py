@@ -22,16 +22,14 @@ def test_write(in_files,outfile):
             jds = json.loads(f.read())
             all_data.append((os.path.basename(file),jds))
 
-    schema = {'id': 'int32',
-              'instruction': 'str',
-              'input': 'str',
-              'output': 'str',
-              'file': 'str',
-              }
-    fs = PythonWriter(outfile,
-                        schema=schema,
-                        with_stream=with_stream,
-                        options=None)
+    schema = {
+        'id': 'int32',
+        'instruction': 'str',
+        'input': 'str',
+        'output': 'str',
+        'file': 'str',
+    }
+    fs = PythonWriter(outfile,schema=schema,with_stream=with_stream,options=None)
 
     N = 1000
     for file, jds in all_data:
@@ -52,6 +50,7 @@ def test_write(in_files,outfile):
                 assert status.ok(), status.message()
                 for k,v in batch.items():
                     v.clear()
+
         if len(batch["id"]):
             status = fs.write_batch(batch.keys(), batch.values())
             assert status.ok(), status.message()
@@ -70,13 +69,11 @@ def test_random(file):
 
 if __name__ == '__main__':
 
+    base_dir = r'../alpaca_chinese_dataset'
     in_files = [
-        (gfile.glob(r'../alpaca_chinese_dataset/原始英文数据/*.json'),
-         r'../alpaca_chinese_dataset/english.arrow'),
-        (gfile.glob(r'../alpaca_chinese_dataset/翻译后的中文数据/*.json'),
-         r'../alpaca_chinese_dataset/chinese.arrow'),
-        (gfile.glob(r'../alpaca_chinese_dataset/其他中文问题补充/*.json'),
-         r'../alpaca_chinese_dataset/other_chinese.arrow'),
+        (gfile.glob(os.path.join(base_dir,'原始英文数据/*.json')), os.path.join(base_dir,'english.arrow')),
+        (gfile.glob(os.path.join(base_dir,'翻译后的中文数据/*.json')), os.path.join(base_dir,'chinese.arrow')),
+        (gfile.glob(os.path.join(base_dir,'其他中文问题补充/*.json')), os.path.join(base_dir,'other_chinese.arrow')),
     ]
     for files,outfile in in_files:
         test_write(files,outfile)

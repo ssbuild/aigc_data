@@ -52,16 +52,12 @@ def test_random(file, limit=2, compression_type='GZIP'):
 
 if __name__ == '__main__':
 
-    if __name__ == '__main__':
-
-        in_files = [
-            (gfile.glob(r'../alpaca_chinese_dataset/原始英文数据/*.json'),
-             r'../alpaca_chinese_dataset/english.record'),
-            (gfile.glob(r'../alpaca_chinese_dataset/翻译后的中文数据/*.json'),
-             r'../alpaca_chinese_dataset/chinese.record'),
-            (gfile.glob(r'../alpaca_chinese_dataset/其他中文问题补充/*.json'),
-             r'../alpaca_chinese_dataset/other_chinese.record'),
-        ]
-        for files, outfile in in_files:
-            test_write(files, outfile)
-            test_random(outfile)
+    base_dir = r'../alpaca_chinese_dataset'
+    in_files = [
+        (gfile.glob(os.path.join(base_dir, '原始英文数据/*.json')), os.path.join(base_dir, 'english.record')),
+        (gfile.glob(os.path.join(base_dir, '翻译后的中文数据/*.json')), os.path.join(base_dir, 'chinese.record')),
+        (gfile.glob(os.path.join(base_dir, '其他中文问题补充/*.json')), os.path.join(base_dir, 'other_chinese.record')),
+    ]
+    for files, outfile in in_files:
+        test_write(files, outfile)
+        test_random(outfile)
