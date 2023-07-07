@@ -75,12 +75,27 @@ class DataWriter:
 
 
 if __name__ == '__main__':
-    base_dir = r'../alpaca_chinese_dataset'
-    in_files = [
-        (gfile.glob(os.path.join(base_dir, '原始英文数据/*.json')), os.path.join(base_dir, 'english.parquet')),
-        (gfile.glob(os.path.join(base_dir, '翻译后的中文数据/*.json')), os.path.join(base_dir, 'chinese.parquet')),
-        (gfile.glob(os.path.join(base_dir, '其他中文问题补充/*.json')), os.path.join(base_dir, 'other_chinese.parquet')),
-    ]
-    for files, outfile in in_files:
-        DataWriter().write(files, outfile)
-        DataWriter.read(outfile)
+
+    data_mode = 'alpaca_chinese'
+
+    if data_mode == 'alpaca_chinese':
+        base_dir = r'../alpaca_chinese_dataset'
+        in_files = [
+            (gfile.glob(os.path.join(base_dir, '原始英文数据/*.json')), os.path.join(base_dir, 'english.parquet')),
+            (gfile.glob(os.path.join(base_dir, '翻译后的中文数据/*.json')), os.path.join(base_dir, 'chinese.parquet')),
+            (gfile.glob(os.path.join(base_dir, '其他中文问题补充/*.json')), os.path.join(base_dir, 'other_chinese.parquet')),
+        ]
+        for files, outfile in in_files:
+            DataWriter().write(files, outfile)
+            DataWriter.read(outfile)
+    elif data_mode == 'bene_chinese':
+        base_dir = r'../alpaca_chinese_dataset'
+        in_files = [
+            (gfile.glob(os.path.join(base_dir, '原始英文数据/*.json')), os.path.join(base_dir, 'english.parquet')),
+            (gfile.glob(os.path.join(base_dir, '翻译后的中文数据/*.json')), os.path.join(base_dir, 'chinese.parquet')),
+            (gfile.glob(os.path.join(base_dir, '其他中文问题补充/*.json')),
+             os.path.join(base_dir, 'other_chinese.parquet')),
+        ]
+        for files, outfile in in_files:
+            DataWriter().write(files, outfile)
+            DataWriter.read(outfile)
