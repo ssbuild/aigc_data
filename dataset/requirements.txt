@@ -1,2 +1,2 @@
 fastcrypto
-fastdatasets>=0.1.14
+fastdatasets>=0.1.15

@@ -16,33 +16,42 @@ from fastdatasets.parquet.dataset import load_dataset,arrow
 from fastdatasets import gfile
 
 with_stream = True
-schema = {
-    'id': 'int32',
-    'instruction': 'str',
-    'input': 'str',
-    'output': 'str',
-    'file': 'str',
-}
+
 
 class DataWriter:
-    def get_file_data(self,in_files):
+    def __del__(self,schema):
+        self.schema = schema
+    def get_file_data(self,in_files,json_whole):
         all_data = []
         for file in in_files:
             with open(file, mode='r', encoding='utf-8') as f:
                 if os.path.basename(file).find('未完成') != -1:
                     continue
-                jds = json.loads(f.read())
+                if json_whole:
+                    jds = json.loads(f.read())
+                else:
+                    lines = f.readlines()
+                    jds = []
+                    for line in lines:
+                        jd = json.loads(line)
+                        if jd:
+                            jds.append(jd)
                 all_data.append((os.path.basename(file), jds))
         return all_data
 
-    def write(self,in_files,outfile):
-        all_data = self.get_file_data(in_files)
-        fs = PythonWriter(outfile, schema=schema)
+    def write(self,in_files,outfile,json_whole=True):
+        all_data = self.get_file_data(in_files,json_whole)
+        fs = PythonWriter(outfile, schema=self.schema)
         N = 1000
         for file, jds in all_data:
-            batch = {k: [] for k in schema}
+            batch = {k: [] for k in self.schema}
             for i, jd in enumerate(jds):
-                batch["id"].append(i)
+                idx = jd.pop('id',None)
+                if isinstance(idx,str):
+                    idx = int(idx)
+                if idx is None:
+                    idx = i
+                batch["id"].append(idx)
                 batch["file"].append(file)
 
                 for k, v in jd.items():
@@ -76,9 +85,17 @@ class DataWriter:
 
 if __name__ == '__main__':
 
-    data_mode = 'alpaca_chinese'
+    data_mode = 'belle_chinese'
 
     if data_mode == 'alpaca_chinese':
+        schema = {
+            'id': 'int32',
+            'instruction': 'str',
+            'input': 'str',
+            'output': 'str',
+            'file': 'str',
+        }
+
         base_dir = r'../alpaca_chinese_dataset'
         in_files = [
             (gfile.glob(os.path.join(base_dir, '原始英文数据/*.json')), os.path.join(base_dir, 'english.parquet')),
@@ -88,14 +105,24 @@ if __name__ == '__main__':
         for files, outfile in in_files:
             DataWriter().write(files, outfile)
             DataWriter.read(outfile)
-    elif data_mode == 'bene_chinese':
-        base_dir = r'../alpaca_chinese_dataset'
+    elif data_mode == 'belle_chinese':
+
+        schema = {
+            'id': 'int32',
+            'instruction': 'str',
+            'input': 'str',
+            'output': 'str',
+            'file': 'str',
+        }
+
+        base_dir = r'D:\tmp_dataset'
         in_files = [
-            (gfile.glob(os.path.join(base_dir, '原始英文数据/*.json')), os.path.join(base_dir, 'english.parquet')),
-            (gfile.glob(os.path.join(base_dir, '翻译后的中文数据/*.json')), os.path.join(base_dir, 'chinese.parquet')),
-            (gfile.glob(os.path.join(base_dir, '其他中文问题补充/*.json')),
-             os.path.join(base_dir, 'other_chinese.parquet')),
+            (gfile.glob(os.path.join(base_dir, 'generated_chat_0.4M.json')), os.path.join(base_dir, 'generated_chat_0.4M.parquet')),
+            (gfile.glob(os.path.join(base_dir, 'multiturn_chat_0.8M.json')), os.path.join(base_dir, 'multiturn_chat_0.8M.parquet')),
+            (gfile.glob(os.path.join(base_dir, 'school_math_0.25M.json')),os.path.join(base_dir, 'school_math_0.25M.parquet')),
+            (gfile.glob(os.path.join(base_dir, 'train_2M_CN.json')),os.path.join(base_dir, 'train_2M_CN.parquet')),
+            (gfile.glob(os.path.join(base_dir, 'train_3.5M_CN.json')),os.path.join(base_dir, 'train_3.5M_CN.parquet')),
         ]
         for files, outfile in in_files:
-            DataWriter().write(files, outfile)
+            DataWriter().write(files, outfile,False)
             DataWriter.read(outfile)
