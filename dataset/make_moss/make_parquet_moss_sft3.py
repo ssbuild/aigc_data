@@ -16,12 +16,7 @@ from tqdm import tqdm
 
 with_stream = True
 
-schema = {
-    'id': 'int32',
-    'instruction': 'str',
-    'input': 'str',
-    'output': 'str',
-}
+
 
 class DataWriter:
     def get_file_data(self,in_files):
@@ -69,8 +64,15 @@ class DataWriter:
                     idx = i
                 batch["id"].append(idx)
 
+                chat = jd.pop('chat')
+                num_turns = jd["num_turns"]
                 for k, v in jd.items():
                     batch[k].append(v)
+                chat_list = []
+                for turn_i in range(num_turns):
+                    chat_list.append(chat.get('turn_{}'.format(turn_i + 1)))
+
+                batch[chat].append(chat_list)
 
                 if len(batch["id"]) % N == 0:
                     status = fs[file_index].write_batch(batch.keys(), batch.values())
@@ -95,15 +97,24 @@ class DataWriter:
             if i > 2:
                 break
 
-if __name__ == '__main__':
 
-    base_dir = r'D:\tmp_dataset\finance'
-    fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
+def make_data(patten,split=1):
+    fs_list = gfile.glob(patten)
     in_files = [
-        ([f],os.path.join(base_dir,os.path.basename(f).replace('.json','.parquet'))) for f in fs_list
+        ([f],os.path.join(os.path.dirname(f),os.path.basename(f).replace('.json','.parquet'))) for f in fs_list
     ]
     for files, outfile in in_files:
-        DataWriter().write(files, outfile,split=1)
-        DataWriter.read(outfile,split=1)
+        DataWriter().write(files, outfile,split=split)
+        DataWriter.read(outfile,split=split)
 
+if __name__ == '__main__':
+    schema = {
+        'conversation_id': 'int32',
+        'meta_instruction': 'str',
+        'num_turns': 'int32',
+        'chat': 'map_list',
+        'category': 'str',
+    }
 
+    base_dir = r'D:\tmp_dataset\moss_sft_003'
+    make_data(gfile.glob(os.path.join(base_dir, '*.jsonl')), split=3)

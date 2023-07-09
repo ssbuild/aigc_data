@@ -106,6 +106,20 @@ def make_data(patten,split=1):
         DataWriter.read(outfile,split=split)
 
 if __name__ == '__main__':
+    # base_dir = r'D:\tmp_dataset\dolly'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\vicuna'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\chinesemedical'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\finance'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\finance'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
 
     # base_dir = r'D:\tmp_dataset\ConvAI2'
     # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
@@ -176,6 +190,11 @@ if __name__ == '__main__':
     # base_dir = r'D:\tmp_dataset\thoughtsource'
     # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
 
-    base_dir = r'D:\tmp_dataset\xp3'
-    make_data(gfile.glob(os.path.join(base_dir, '*.json')),split=3)
+    # base_dir = r'D:\tmp_dataset\xp3'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')),split=3)
 
+    # base_dir = r'D:\tmp_dataset\alpaca_moss_sft_002'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')), split=3)
+
+    base_dir = r'D:\tmp_dataset\alpaca_moss_sft_003'
+    make_data(gfile.glob(os.path.join(base_dir, '*.jsonl')), split=3)
