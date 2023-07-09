@@ -95,65 +95,87 @@ class DataWriter:
             if i > 2:
                 break
 
+
+def make_data(patten,split=1):
+    fs_list = gfile.glob(patten)
+    in_files = [
+        ([f],os.path.join(os.path.dirname(f),os.path.basename(f).replace('.json','.parquet'))) for f in fs_list
+    ]
+    for files, outfile in in_files:
+        DataWriter().write(files, outfile,split=split)
+        DataWriter.read(outfile,split=split)
+
 if __name__ == '__main__':
 
     # base_dir = r'D:\tmp_dataset\ConvAI2'
-    # fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
-    # in_files = [
-    #     ([f],os.path.join(base_dir,os.path.basename(f).replace('.json','.parquet'))) for f in fs_list
-    # ]
-    # for files, outfile in in_files:
-    #     DataWriter().write(files, outfile,split=1)
-    #     DataWriter.read(outfile,split=1)
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
 
     # base_dir = r'D:\tmp_dataset\gpt4all'
-    # fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
-    # in_files = [
-    #     ([f],os.path.join(base_dir,os.path.basename(f).replace('.json','.parquet'))) for f in fs_list
-    # ]
-    # for files, outfile in in_files:
-    #     DataWriter().write(files, outfile,split=1)
-    #     DataWriter.read(outfile,split=1)
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
 
     # base_dir = r'D:\tmp_dataset\rlhf'
-    # fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
-    # in_files = [
-    #     ([f], os.path.join(base_dir, os.path.basename(f).replace('.json', '.parquet'))) for f in fs_list
-    # ]
-    # for files, outfile in in_files:
-    #     DataWriter().write(files, outfile, split=1)
-    #     DataWriter.read(outfile, split=1)
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
 
-    schema = {
-        'id': 'int32',
-        'instruction': 'str',
-        'input': 'str',
-        'output': 'str',
-    }
 
-    base_dir = r'D:\tmp_dataset\tabular\all'
-    fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
-    in_files = [
-        ([f], os.path.join(base_dir, os.path.basename(f).replace('.json', '.parquet'))) for f in fs_list
-    ]
-    for files, outfile in in_files:
-        DataWriter().write(files, outfile, split=1)
-        DataWriter.read(outfile, split=1)
+    # base_dir = r'D:\tmp_dataset\Auto-CoT'
+    #make_data(gfile.glob(os.path.join(base_dir, '*.json')))
 
-    base_dir = r'D:\tmp_dataset\tabular\question_answer'
-    fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
-    in_files = [
-        ([f], os.path.join(base_dir, os.path.basename(f).replace('.json', '.parquet'))) for f in fs_list
-    ]
-    for files, outfile in in_files:
-        DataWriter().write(files, outfile, split=1)
-        DataWriter.read(outfile, split=1)
 
-    base_dir = r'D:\tmp_dataset\tabular\dact-verification'
-    fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
-    in_files = [
-        ([f], os.path.join(base_dir, os.path.basename(f).replace('.json', '.parquet'))) for f in fs_list
-    ]
-    for files, outfile in in_files:
-        DataWriter().write(files, outfile, split=1)
-        DataWriter.read(outfile, split=1)
+    # base_dir = r'D:\tmp_dataset\Chain-of-Thought\formatted_cot_data'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\Chain-of-Thought\formatted_cot_data_zh'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\COIG'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\CSL'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\baize'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\GPTeacher\Codegen'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+    #
+    #
+    # base_dir = r'D:\tmp_dataset\GPTeacher\Instruct'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+    #
+    # base_dir = r'D:\tmp_dataset\GPTeacher\Roleplay'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+    #
+    # base_dir = r'D:\tmp_dataset\GPTeacher\Toolformer'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\Guanaco\Guanaco'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+    #
+    # base_dir = r'D:\tmp_dataset\Guanaco\Guanaco_additional'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\HC3'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\instinwild'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\OIG'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\pCLUE'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\prosocial-dialog\dialog'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\webGPT'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    # base_dir = r'D:\tmp_dataset\thoughtsource'
+    # make_data(gfile.glob(os.path.join(base_dir, '*.json')))
+
+    base_dir = r'D:\tmp_dataset\xp3'
+    make_data(gfile.glob(os.path.join(base_dir, '*.json')),split=3)
+
