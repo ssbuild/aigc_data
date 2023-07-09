@@ -23,7 +23,12 @@ class DataWriter:
         all_data = []
         for file in in_files:
             with open(file, mode='r', encoding='utf-8') as f:
-                jds = json.loads(f.read())
+                lines = f.readlines()
+                jds = []
+                for line in lines:
+                    jd = json.loads(line)
+                    if jd:
+                        jds.append(jd)
                 all_data.append((os.path.basename(file), jds))
         return all_data
 
@@ -57,12 +62,6 @@ class DataWriter:
                 data_index += 1
                 if data_index % limit_n == 0:
                     file_index += 1
-                idx = jd.pop('id',None)
-                if isinstance(idx,str):
-                    idx = int(idx)
-                if idx is None:
-                    idx = i
-                batch["id"].append(idx)
 
                 chat = jd.pop('chat')
                 num_turns = jd["num_turns"]
@@ -72,14 +71,14 @@ class DataWriter:
                 for turn_i in range(num_turns):
                     chat_list.append(chat.get('turn_{}'.format(turn_i + 1)))
 
-                batch[chat].append(chat_list)
+                batch["chat"].append(chat_list)
 
-                if len(batch["id"]) % N == 0:
+                if len(batch["conversation_id"]) % N == 0:
                     status = fs[file_index].write_batch(batch.keys(), batch.values())
                     assert status.ok(), status.message()
                     for k, v in batch.items():
                         v.clear()
-            if len(batch["id"]):
+            if len(batch["conversation_id"]):
                 status = fs[file_index].write_batch(batch.keys(), batch.values())
                 assert status.ok(), status.message()
                 for k, v in batch.items():
@@ -116,5 +115,5 @@ if __name__ == '__main__':
         'category': 'str',
     }
 
-    base_dir = r'D:\tmp_dataset\moss_sft_003'
+    base_dir = r'./moss_sft_003'
     make_data(gfile.glob(os.path.join(base_dir, '*.jsonl')), split=3)
