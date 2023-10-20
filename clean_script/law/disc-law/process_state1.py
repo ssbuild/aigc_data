@@ -51,6 +51,7 @@ for filename in fs_list:
     df_muti = pd.DataFrame(D_muti)
 
     file = os.path.basename(filename)
+    file = file.replace('.csv','_val.csv')
     df_single.to_csv(os.path.join(r'F:\nlpdata_2023\DISC-Law',"dev_single",file), index=False)
     df_muti.to_csv(os.path.join(r'F:\nlpdata_2023\DISC-Law',"dev_muti",file), index=False)
 
