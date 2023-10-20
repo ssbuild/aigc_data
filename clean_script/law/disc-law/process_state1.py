@@ -3,11 +3,13 @@
 # @Time    : 2023/10/20 9:51
 import json
 import os
-from pprint import pprint
-
 import pandas as pd
 from collections import OrderedDict
 import glob
+
+# 将数据制作成 aigc evals 评估格式
+
+# 数据下载地址 https://github.com/FudanDISC/DISC-LawLLM/tree/main/eval/data
 
 fs_list = glob.glob(r'F:\nlpdata_2023\DISC-Law\data\objective_eval\test\*.csv')
 os.makedirs(os.path.join(r'F:\nlpdata_2023\DISC-Law', "dev_single"), exist_ok=True)
