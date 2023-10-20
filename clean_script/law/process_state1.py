@@ -9,7 +9,7 @@ import pandas as pd
 random.seed(123456)
 
 # 数据下载 https://jecqa.thunlp.org/
-
+# 切分训练评估数据集
 def extract_data_from_jec(jec_files,out_dir):
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(os.path.join(out_dir, "train"),exist_ok=True)

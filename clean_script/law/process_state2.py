@@ -16,6 +16,7 @@ import pandas as pd
 # new_jd["D"] = option_list["D"]
 # new_jd["answer"] = jd["answer"]
 
+# 将切分的训练评估数据集，制作成可训练格式
 
 def dump_write(fs_list,outfile):
     with open(outfile,mode='w',encoding='utf-8') as f:

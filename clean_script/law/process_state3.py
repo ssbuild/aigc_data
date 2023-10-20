@@ -11,6 +11,9 @@ fs_list = glob.glob(r'F:\nlpdata_2023\JEC-QA\clean\dev\*.csv')
 os.makedirs(r"F:\nlpdata_2023\JEC-QA\clean\dev_single",exist_ok=True)
 os.makedirs(r"F:\nlpdata_2023\JEC-QA\clean\dev_muti",exist_ok=True)
 
+
+# 将评估dev数据集 , 制作成 aigc_evals 评估格式
+
 for filename in fs_list:
     df = pd.read_csv(filename)
 
