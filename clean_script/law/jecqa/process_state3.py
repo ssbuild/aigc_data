@@ -55,6 +55,7 @@ def make_evals(fs_list,output_dir,shuffle=False,limit_single=-1,limit_muti=-1):
 
 
         basename = os.path.basename(filename)
+        basename = basename.replace(".csv","_val.csv")
         df_single.to_csv(os.path.join(output_dir,"single",basename),index=False)
         df_muti.to_csv(os.path.join(output_dir, "muti", basename),index=False)
 
