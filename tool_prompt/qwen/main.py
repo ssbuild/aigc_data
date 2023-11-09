@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author  : ssbuild
 # @Time    : 2023/11/9 15:51
-
+import copy
 # 下载数据集 https://github.com/tangqiaoyu/ToolAlpaca
 
 import json
@@ -30,7 +30,6 @@ class ToolsDataMaker:
             Instances = jd["Instances"]
 
             tools = []
-            conversations = []
             error = False
             for func_name,func_description in Function_Description.items():
                 if func_name == "components":
@@ -63,6 +62,8 @@ class ToolsDataMaker:
             if error:
                 continue
             inst_id = -1
+
+            conversations = []
             for instance in Instances:
                 inst_id += 1
                 intermediate_steps = instance.get("intermediate_steps",None)
@@ -95,10 +96,12 @@ class ToolsDataMaker:
                     "content":  instance["output"]
                 })
 
-            all_conversations.append({
-                "id": len(all_conversations),
-                "conversations": conversations
-            })
+                if conversations:
+                    all_conversations.append({
+                        "id": len(all_conversations),
+                        "conversations": copy.deepcopy(conversations)
+                    })
+                conversations.clear()
         return all_conversations
 
     @classmethod
