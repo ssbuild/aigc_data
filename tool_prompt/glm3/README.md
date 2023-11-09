@@ -3,8 +3,8 @@
 
 
 ## 下载制作好的数据
-- [数据预览](http://124.70.99.221:8080/data_share/index?ds_id=64)
-- [qwen_tools](https://huggingface.co/datasets/ssbuild/tool_alpaca_for_qwen)
+- [数据预览](http://124.70.99.221:8080/data_share/index?ds_id=65)
+- [qwen_tools](https://huggingface.co/datasets/ssbuild/tool_alpaca_for_glm3)
 
 
 

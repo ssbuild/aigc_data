@@ -75,10 +75,19 @@ class ToolsDataMaker:
                 if len(intermediate_steps) != 1:
                     # qwen 模板暂时不支持同时请求多个函数
                     continue
+
+
+                conversations.append({
+                    "role": "system",
+                    "content": ToolsBuilder.build_system(tools)
+                })
+
                 conversations.append({
                     "role": "user",
-                    "content": ToolsBuilder.build(tools,query=instance["input"])
+                    "content": instance["input"]
                 })
+
+
 
                 response,observation = ToolsBuilder.build_response(intermediate_steps[0])
                 conversations.append({
@@ -88,7 +97,7 @@ class ToolsDataMaker:
 
                 conversations.append({
                     "role": "observation",
-                    "content": 'Observation: ' + observation
+                    "content": observation
                 })
 
                 conversations.append({
@@ -152,8 +161,8 @@ class ToolsDataMaker:
 
 if __name__ == '__main__':
     filename = r'E:\py-http\ToolAlpaca\data\train_data.json'
-    output_file = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_qwen.parquet'
-    output_file_json = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_qwen.json'
+    output_file = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_glm3.parquet'
+    output_file_json = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_glm3.json'
     os.makedirs(os.path.dirname(output_file),exist_ok=True)
 
     all_conversations = ToolsDataMaker.preprocess(filename)
