@@ -49,3 +49,21 @@ Question: {query}"""
 
         prompt = REACT_PROMPT.format(tool_descs=tool_descs, tool_names=tool_names, query=query)
         return prompt
+
+
+    @classmethod
+    def build_response(cls,step):
+        pos = step[0][2].find("Action Input: ")
+        thought = step[0][2][:pos]
+        action = step[0][0]
+        action_input = step[0][1]
+
+        pos = step[1].find("Response:") + len("Response:") + 1
+        observation = step[1][pos:]
+        response = f"""
+Thought: {thought}
+Action: {action}
+Action Input: {action_input}
+Observation: {observation}
+"""
+        return response,observation
