@@ -138,7 +138,7 @@ class ToolsDataMaker(ToolsDataMakerBase):
             function = ag["function"]
             train_messages = ag["train_messages"][-1]
 
-            assert finish_type == "give_answer"
+            # assert finish_type == "give_answer"
 
             tools = function
 
@@ -224,12 +224,17 @@ class ToolsDataMaker(ToolsDataMakerBase):
                 assert "observation" in a or (function_call["name"] == "Finish")
 
                 if function_call["name"] == "Finish":
-                    try:
-                        observation = json.loads(function_call["arguments"])["final_answer"]
-                    except Exception as e:
-                        # print(e)
+                    if finish_type == "give_answer":
+                        try:
+                            observation = json.loads(function_call["arguments"])["final_answer"]
+                        except Exception as e:
+                            # print(e)
+                            conversations.pop(-1)
+                            break
+                    else:
                         conversations.pop(-1)
                         break
+
                     conversations.append({
                         "from": "assistant",
                         "value": observation
@@ -252,9 +257,8 @@ class ToolsDataMaker(ToolsDataMakerBase):
 
         return all_conversations
 
-def build_tool_alpaca():
-    filename = r'F:\nlpdata_2023\ToolAlpaca\data\train_data.json'
-    output_file = r'F:\nlpdata_2023\ToolAlpaca\data\record\tool_alpaca_for_glm3.parquet'
+
+def build_tool_alpaca(filename, output_file):
     output_file_json = output_file.replace('.parquet', '.json')
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
@@ -265,9 +269,8 @@ def build_tool_alpaca():
 
     ToolsDataMaker.read(output_file)
 
-def build_tool_bench():
-    filename = r'F:\nlpdata_2023\tool_bench\data\data\answer\G1_answer'
-    output_file = r'E:\py-http\ToolBench\data_example\answer\tool_bench_for_glm3.parquet'
+
+def build_tool_bench(filename, output_file):
     output_file_json = output_file.replace('.parquet', '.json')
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
@@ -278,8 +281,18 @@ def build_tool_bench():
 
     ToolsDataMaker.read(output_file)
 
+
 if __name__ == '__main__':
-    build_tool_alpaca()
-    build_tool_bench()
+    build_tool_alpaca(r'F:\nlpdata_2023\ToolAlpaca\data\train_data.json',
+                      r'F:\nlpdata_2023\ToolAlpaca\data\record\tool_alpaca_for_glm3.parquet')
+
+    build_tool_bench(r'F:\nlpdata_2023\tool_bench\data\data\answer\G1_answer',
+                     r'F:\nlpdata_2023\tool_bench\data\data\answer\tool_bench_g1_for_glm3.parquet')
+
+    build_tool_bench(r'F:\nlpdata_2023\tool_bench\data\data\answer\G2_answer',
+                     r'F:\nlpdata_2023\tool_bench\data\data\answer\tool_bench_g2_for_glm3.parquet')
+
+    build_tool_bench(r'F:\nlpdata_2023\tool_bench\data\data\answer\G3_answer',
+                     r'F:\nlpdata_2023\tool_bench\data\data\answer\tool_bench_g3_for_glm3.parquet')
 
 
