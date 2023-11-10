@@ -9,7 +9,7 @@ import copy
 import json
 import re
 from data_tools.utils.utils import format_parameters_from_json_string, get_type_from_desc
-from data_tools.qwen.data_tools import ToolsBuilder
+from data_tools.qwen.tools_builder import ToolsBuilder
 from data_tools.base.tool_maker import ToolsDataMakerBase
 
 # 下载数据集 https://github.com/tangqiaoyu/ToolAlpaca
@@ -71,24 +71,24 @@ class ToolsDataMaker(ToolsDataMakerBase):
                     # qwen 模板暂时不支持同时请求多个函数
                     continue
                 conversations.append({
-                    "role": "user",
-                    "content": ToolsBuilder.build(tools,query=instance["input"])
+                    "from": "user",
+                    "value": ToolsBuilder.build(tools,query=instance["input"])
                 })
 
                 response,observation = ToolsBuilder.build_response(intermediate_steps[0])
                 conversations.append({
-                    "role": "assistant",
-                    "content": response
+                    "from": "assistant",
+                    "value": response
                 })
 
                 conversations.append({
-                    "role": "observation",
-                    "content": 'Observation: ' + observation
+                    "from": "observation",
+                    "value": 'Observation: ' + observation
                 })
 
                 conversations.append({
-                    "role": "assistant",
-                    "content":  instance["output"]
+                    "from": "assistant",
+                    "value":  instance["output"]
                 })
 
                 if conversations:

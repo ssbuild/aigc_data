@@ -9,7 +9,7 @@ import json
 import re
 from data_tools.base.tool_maker import ToolsDataMakerBase
 from data_tools.utils.utils import format_parameters_from_json_string, get_type_from_desc
-from data_tools.glm3.data_tools import ToolsBuilder
+from data_tools.glm3.tools_builder import ToolsBuilder
 
 # 下载数据集 https://github.com/tangqiaoyu/ToolAlpaca
 class ToolsDataMaker(ToolsDataMakerBase):
@@ -72,31 +72,31 @@ class ToolsDataMaker(ToolsDataMakerBase):
 
 
                 conversations.append({
-                    "role": "system",
-                    "content": ToolsBuilder.build_system(tools)
+                    "from": "system",
+                    "value": ToolsBuilder.build_system(tools)
                 })
 
                 conversations.append({
-                    "role": "user",
-                    "content": instance["input"]
+                    "from": "user",
+                    "value": instance["input"]
                 })
 
 
 
                 response,observation = ToolsBuilder.build_response(intermediate_steps[0])
                 conversations.append({
-                    "role": "assistant",
-                    "content": response
+                    "from": "assistant",
+                    "value": response
                 })
 
                 conversations.append({
-                    "role": "observation",
-                    "content": observation
+                    "from": "observation",
+                    "value": observation
                 })
 
                 conversations.append({
-                    "role": "assistant",
-                    "content":  instance["output"]
+                    "from": "assistant",
+                    "value":  instance["output"]
                 })
 
                 if conversations:
