@@ -6,9 +6,6 @@ from fastdatasets.parquet import PythonWriter
 
 
 class ToolsDataMakerBase:
-    @classmethod
-    def preprocess(cls, filename):
-        raise NotImplemented
 
     @classmethod
     def write(cls, all_conversations, outfile):

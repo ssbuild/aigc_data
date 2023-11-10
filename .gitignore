@@ -1,4 +1,4 @@
 /.idea
 /share_private/*.record
-/data_alpaca/__pycache__
+/data_sft_alpaca/__pycache__
 __pycache__

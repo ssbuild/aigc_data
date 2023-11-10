@@ -1,17 +1,17 @@
 
 
-##  open data space 数据共享空间
+##  aigc_data space 数据共享空间
 
 
-##  Open-data for LLMs 
+##  data for LLMs 
 
  If you like the project, please show your support by leaving a star ⭐.
 
- | No. |                                            project                                             | description |  secret |
- |-----|:----------------------------------------------------------------------------------------------:|:-----------:|:-------:|
- | 1   |                 [悟道 - 200G](https://data.baai.ac.cn/details/WuDaoCorporaText)                  |             |    不需要秘钥    |
- | 2   |                         [Pile英文数据 - 1.3T的](https://pile.eleuther.ai/)                          |   需要强力清洗    |  不需要秘钥  |
- | 3    | [Tigerbot 中文开源预训练集 - 55G](https://huggingface.co/datasets/TigerResearch/pretrain_zh/tree/main) |             |  不需要秘钥  |
+ | No. |                                            project                                             | description | secret |
+ |-----|:----------------------------------------------------------------------------------------------:|:-----------:|:------:|
+ | 1   |                 [悟道 - 200G](https://data.baai.ac.cn/details/WuDaoCorporaText)                  |             | 不需要秘钥  |
+ | 2   |                         [Pile英文数据 - 1.3T的](https://pile.eleuther.ai/)                          |   需要强力清洗    | 不需要秘钥  |
+ | 3   | [Tigerbot 中文开源预训练集 - 55G](https://huggingface.co/datasets/TigerResearch/pretrain_zh/tree/main) |             | 不需要秘钥  |
 
 ...
 

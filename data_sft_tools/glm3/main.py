@@ -7,14 +7,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../..'))
 import copy
 import json
 import re
-from data_tools.base.tool_maker import ToolsDataMakerBase
-from data_tools.utils.utils import format_parameters_from_json_string, get_type_from_desc
-from data_tools.glm3.tools_builder import ToolsBuilder
+from data_sft_tools.base.tool_maker import ToolsDataMakerBase
+from data_sft_tools.utils.utils import format_parameters_from_json_string, get_type_from_desc
+from data_sft_tools.glm3.tools_builder import ToolsBuilder
 
 # 下载数据集 https://github.com/tangqiaoyu/ToolAlpaca
 class ToolsDataMaker(ToolsDataMakerBase):
     @classmethod
-    def preprocess(cls,filename):
+    def preprocess_tool_alpaca(cls,filename):
         with open(filename, mode='r', encoding='utf-8') as f:
             jds = json.loads(f.read())
 
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     output_file_json = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_glm3.json'
     os.makedirs(os.path.dirname(output_file),exist_ok=True)
 
-    all_conversations = ToolsDataMaker.preprocess(filename)
+    all_conversations = ToolsDataMaker.preprocess_tool_alpaca(filename)
 
     ToolsDataMaker.write(all_conversations,output_file)
     ToolsDataMaker.write_json(all_conversations,output_file_json)

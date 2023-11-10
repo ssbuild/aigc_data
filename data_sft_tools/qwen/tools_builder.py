@@ -68,3 +68,13 @@ Action Input: {action_input}
 Observation: {observation}
 """
         return response,observation
+
+    @classmethod
+    def build_response_with_args(cls,thought, action,action_input,observation):
+        response = f"""
+Thought: {thought}
+Action: {action}
+Action Input: {action_input}
+Observation: {observation}
+"""
+        return response, observation
