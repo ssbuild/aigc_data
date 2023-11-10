@@ -7,10 +7,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../..'))
 import copy
 import json
 import re
-from tool_prompt.base.tool_maker import ToolsDataMakerBase
-from tool_prompt.utils.utils import format_parameters_from_json_string, get_type_from_desc
-from tool_prompt.glm3.data_tools import ToolsBuilder
-from fastdatasets.parquet.writer import PythonWriter
+from data_tools.base.tool_maker import ToolsDataMakerBase
+from data_tools.utils.utils import format_parameters_from_json_string, get_type_from_desc
+from data_tools.glm3.data_tools import ToolsBuilder
 
 # 下载数据集 https://github.com/tangqiaoyu/ToolAlpaca
 class ToolsDataMaker(ToolsDataMakerBase):
