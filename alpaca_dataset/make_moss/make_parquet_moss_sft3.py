@@ -2,11 +2,6 @@
 # @Time:  16:34
 # @Author: tk
 # @File：make_parquet_dataset
-
-# -*- coding: utf-8 -*-
-# @Time:  22:31
-# @Author: tk
-# @File：make_dataset
 import json
 import os
 from fastdatasets.parquet.writer import PythonWriter
@@ -16,19 +11,19 @@ from tqdm import tqdm
 
 with_stream = True
 
-schema = {
-    'id': 'int32',
-    'instruction': 'str',
-    'input': 'str',
-    'output': 'str',
-}
+
 
 class DataWriter:
     def get_file_data(self,in_files):
         all_data = []
         for file in in_files:
             with open(file, mode='r', encoding='utf-8') as f:
-                jds = json.loads(f.read())
+                lines = f.readlines()
+                jds = []
+                for line in lines:
+                    jd = json.loads(line)
+                    if jd:
+                        jds.append(jd)
                 all_data.append((os.path.basename(file), jds))
         return all_data
 
@@ -62,22 +57,23 @@ class DataWriter:
                 data_index += 1
                 if data_index % limit_n == 0:
                     file_index += 1
-                idx = jd.pop('id',None)
-                if isinstance(idx,str):
-                    idx = int(idx)
-                if idx is None:
-                    idx = i
-                batch["id"].append(idx)
 
+                chat = jd.pop('chat')
+                num_turns = jd["num_turns"]
                 for k, v in jd.items():
                     batch[k].append(v)
+                chat_list = []
+                for turn_i in range(num_turns):
+                    chat_list.append(chat.get('turn_{}'.format(turn_i + 1)))
 
-                if len(batch["id"]) % N == 0:
+                batch["chat"].append(chat_list)
+
+                if len(batch["conversation_id"]) % N == 0:
                     status = fs[file_index].write_batch(batch.keys(), batch.values())
                     assert status.ok(), status.message()
                     for k, v in batch.items():
                         v.clear()
-            if len(batch["id"]):
+            if len(batch["conversation_id"]):
                 status = fs[file_index].write_batch(batch.keys(), batch.values())
                 assert status.ok(), status.message()
                 for k, v in batch.items():
@@ -92,7 +88,9 @@ class DataWriter:
         print(file,'total', len(dataset))
         for i in range(len(dataset)):
             print(dataset[i])
-            break
+            if i > 2:
+                break
+
 
 def make_data(patten,split=1):
     fs_list = gfile.glob(patten)
@@ -104,11 +102,13 @@ def make_data(patten,split=1):
         DataWriter.read(outfile,split=split)
 
 if __name__ == '__main__':
-    base_dir = r'./ultrachat'
-    make_data(os.path.join(base_dir, 'ultrachat.json'), split=4)
-    
-    base_dir = r'./ultrachat'
-    make_data(os.path.join(base_dir, 'ultrachat_context.json'),split=10)
+    schema = {
+        'conversation_id': 'int32',
+        'meta_instruction': 'str',
+        'num_turns': 'int32',
+        'chat': 'map_list',
+        'category': 'str',
+    }
 
-
-
+    base_dir = r'./moss_sft_003'
+    make_data(gfile.glob(os.path.join(base_dir, '*.jsonl')), split=3)

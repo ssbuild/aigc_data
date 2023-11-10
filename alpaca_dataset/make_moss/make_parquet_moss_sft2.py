@@ -2,11 +2,6 @@
 # @Time:  16:34
 # @Author: tk
 # @File：make_parquet_dataset
-
-# -*- coding: utf-8 -*-
-# @Time:  22:31
-# @Author: tk
-# @File：make_dataset
 import json
 import os
 from fastdatasets.parquet.writer import PythonWriter
@@ -52,14 +47,11 @@ class DataWriter:
         data_index = -1
         file_index = -1
         for file, jds in all_data:
-            print('****',file,len(jds),schema.keys())
             batch = {k: [] for k in schema}
             for i, jd in enumerate(tqdm(jds)):
-
                 data_index += 1
                 if data_index % limit_n == 0:
                     file_index += 1
-                jd.pop('table_rows',None)
                 idx = jd.pop('id',None)
                 if isinstance(idx,str):
                     idx = int(idx)
@@ -90,67 +82,26 @@ class DataWriter:
         print(file,'total', len(dataset))
         for i in range(len(dataset)):
             print(dataset[i])
-            break
-
-if __name__ == '__main__':
-
-    schema = {
-        'id': 'int32',
-        'instruction': 'str',
-        'input': 'str',
-        'output': 'str',
-        "table_type": "str",
-        "task_type": "str",
-        "dataset": "str",
-    }
+            if i > 2:
+                break
 
 
-    # base_dir = r'D:\tmp_dataset\tabular\question_answer'
-    # fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
-    # in_files = [
-    #     ([f], os.path.join(base_dir, os.path.basename(f).replace('.json', '.parquet'))) for f in fs_list
-    # ]
-    # for files, outfile in in_files:
-    #     if any([_.find('TAT-QA') != -1 for _ in files]):
-    #         schema = {
-    #             'id': 'int32',
-    #             'instruction': 'str',
-    #             'input': 'str',
-    #             'output': 'str',
-    #             "table_type": "str",
-    #             "task_type": "str",
-    #             "dataset": "str",
-    #             "answer_type": "str",
-    #         }
-    #     else:
-    #         schema = {
-    #             'id': 'int32',
-    #             'instruction': 'str',
-    #             'input': 'str',
-    #             'output': 'str',
-    #             "table_type": "str",
-    #             "task_type": "str",
-    #             "dataset": "str",
-    #         }
-    #     DataWriter().write(files, outfile, split=1)
-    #     DataWriter.read(outfile, split=1)
-    #
-    schema = {
-        'id': 'int32',
-        'instruction': 'str',
-        'input': 'str',
-        'output': 'str',
-        "table_type": "str",
-        "task_type": "str",
-        "dataset": "str",
-    }
-
-
-    base_dir = r'D:\tmp_dataset\tabular\dact-verification'
-    fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
+def make_data(patten,split=1):
+    fs_list = gfile.glob(patten)
     in_files = [
-        ([f], os.path.join(base_dir, os.path.basename(f).replace('.json', '.parquet'))) for f in fs_list
+        ([f],os.path.join(os.path.dirname(f),os.path.basename(f).replace('.json','.parquet'))) for f in fs_list
     ]
     for files, outfile in in_files:
-        DataWriter().write(files, outfile, split=1)
-        DataWriter.read(outfile, split=1)
+        DataWriter().write(files, outfile,split=split)
+        DataWriter.read(outfile,split=split)
+
+if __name__ == '__main__':
+    schema = {
+        'id': 'int32',
+        'prefix': 'str',
+        'num_turns': 'int32',
+        'plain_text': 'str',
+    }
+    base_dir = r'D:\tmp_dataset\moss_sft_002'
+    make_data(gfile.glob(os.path.join(base_dir, '*.json')), split=1)
+

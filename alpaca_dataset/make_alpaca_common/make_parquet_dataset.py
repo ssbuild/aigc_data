@@ -2,11 +2,6 @@
 # @Time:  16:34
 # @Author: tk
 # @File：make_parquet_dataset
-
-# -*- coding: utf-8 -*-
-# @Time:  22:31
-# @Author: tk
-# @File：make_dataset
 import json
 import os
 from fastdatasets.parquet.writer import PythonWriter

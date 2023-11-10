@@ -2,11 +2,6 @@
 # @Time:  16:34
 # @Author: tk
 # @File：make_parquet_dataset
-
-# -*- coding: utf-8 -*-
-# @Time:  22:31
-# @Author: tk
-# @File：make_dataset
 import json
 import os
 from fastdatasets.parquet.writer import PythonWriter
@@ -16,7 +11,12 @@ from tqdm import tqdm
 
 with_stream = True
 
-
+schema = {
+    'id': 'int32',
+    'instruction': 'str',
+    'input': 'str',
+    'output': 'str',
+}
 
 class DataWriter:
     def get_file_data(self,in_files):
@@ -87,9 +87,7 @@ class DataWriter:
         print(file,'total', len(dataset))
         for i in range(len(dataset)):
             print(dataset[i])
-            if i > 2:
-                break
-
+            break
 
 def make_data(patten,split=1):
     fs_list = gfile.glob(patten)
@@ -101,12 +99,11 @@ def make_data(patten,split=1):
         DataWriter.read(outfile,split=split)
 
 if __name__ == '__main__':
-    schema = {
-        'id': 'int32',
-        'prefix': 'str',
-        'num_turns': 'int32',
-        'plain_text': 'str',
-    }
-    base_dir = r'D:\tmp_dataset\moss_sft_002'
-    make_data(gfile.glob(os.path.join(base_dir, '*.json')), split=1)
+    base_dir = r'./ultrachat'
+    make_data(os.path.join(base_dir, 'ultrachat.json'), split=4)
+    
+    base_dir = r'./ultrachat'
+    make_data(os.path.join(base_dir, 'ultrachat_context.json'),split=10)
+
+
 

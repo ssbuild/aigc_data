@@ -2,11 +2,6 @@
 # @Time:  16:34
 # @Author: tk
 # @File：make_parquet_dataset
-
-# -*- coding: utf-8 -*-
-# @Time:  22:31
-# @Author: tk
-# @File：make_dataset
 import json
 import os
 from fastdatasets.parquet.writer import PythonWriter
@@ -92,12 +87,11 @@ class DataWriter:
         print(file,'total', len(dataset))
         for i in range(len(dataset)):
             print(dataset[i])
-            if i > 2:
-                break
+            break
 
 if __name__ == '__main__':
 
-    base_dir = r'D:\tmp_dataset\alpacaGPT4'
+    base_dir = r'D:\tmp_dataset\sharegpt'
     fs_list = gfile.glob(os.path.join(base_dir, '*.json'))
     in_files = [
         ([f],os.path.join(base_dir,os.path.basename(f).replace('.json','.parquet'))) for f in fs_list

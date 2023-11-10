@@ -53,13 +53,14 @@ Question: {query}"""
 
     @classmethod
     def build_response(cls,step):
-        pos = step[0][2].find("Action Input: ")
+        pos = step[0][2].find("\nAction:")
         thought = step[0][2][:pos]
         action = step[0][0]
         action_input = step[0][1]
 
-        pos = step[1].find("Response:") + len("Response:") + 1
-        observation = step[1][pos:]
+        # pos = step[1].find("Response:") + len("Response:") + 1
+        # observation = step[1][pos:]
+        observation = step[1]
         response = f"""
 Thought: {thought}
 Action: {action}

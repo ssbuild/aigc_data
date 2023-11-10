@@ -2,12 +2,6 @@
 # @Time:  22:31
 # @Author: tk
 # @File：make_dataset
-
-# -*- coding: utf-8 -*-
-# @Time:  22:31
-# @Author: tk
-# @File：make_dataset
-
 import json
 import os
 

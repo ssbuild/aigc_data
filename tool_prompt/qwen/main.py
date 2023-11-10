@@ -1,24 +1,20 @@
 # -*- coding: utf-8 -*-
 # @Author  : ssbuild
 # @Time    : 2023/11/9 15:51
-import copy
-# 下载数据集 https://github.com/tangqiaoyu/ToolAlpaca
-
-import json
-import os.path
-import re
+import os
 import sys
-sys.path.append('.')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../..')))
 
-
-from utils import format_parameters_from_json_string, get_type_from_desc
-from data_tools import ToolsBuilder
+import copy
+import json
+import re
+from tool_prompt.utils.utils import format_parameters_from_json_string, get_type_from_desc
+from tool_prompt.qwen.data_tools import ToolsBuilder
 from fastdatasets.parquet.writer import PythonWriter
+from tool_prompt.base.tool_maker import ToolsDataMakerBase
 
-
-
-with_stream = True
-class ToolsDataMaker:
+# 下载数据集 https://github.com/tangqiaoyu/ToolAlpaca
+class ToolsDataMaker(ToolsDataMakerBase):
     @classmethod
     def preprocess(cls,filename):
         with open(filename, mode='r', encoding='utf-8') as f:
@@ -104,51 +100,8 @@ class ToolsDataMaker:
                 conversations.clear()
         return all_conversations
 
-    @classmethod
-    def write(cls,all_conversations,outfile):
-        schema = {
-            'id': 'int32',
-            'conversations': 'map_list',
-        }
-
-        fs = PythonWriter(outfile, schema=schema)
-        N = 1000
-
-        batch = {k: [] for k in schema}
-        for conversations in all_conversations:
-
-            batch["id"].append(conversations["id"])
-            batch["conversations"].append(conversations["conversations"])
 
 
-            if len(batch["id"]) % N == 0:
-                status = fs.write_batch(batch.keys(), batch.values())
-                assert status.ok(), status.message()
-                for k, v in batch.items():
-                    v.clear()
-        if len(batch["id"]):
-            status = fs.write_batch(batch.keys(), batch.values())
-            assert status.ok(), status.message()
-            for k, v in batch.items():
-                v.clear()
-
-        fs.close()
-
-    @classmethod
-    def write_json(cls, all_conversations, outfile):
-        with open(outfile,mode='w',encoding='utf-8') as f:
-            for conversations in all_conversations:
-                f.write(json.dumps(conversations,ensure_ascii=False) + '\n')
-
-
-    @staticmethod
-    def read(file):
-        from fastdatasets.parquet.dataset import load_dataset
-        dataset = load_dataset.RandomDataset(file, with_share_memory=not with_stream)
-        print(file, 'total', len(dataset))
-        for i in range(len(dataset)):
-            print(dataset[i])
-            break
 
 if __name__ == '__main__':
     filename = r'E:\py-http\ToolAlpaca\data\train_data.json'

@@ -13,19 +13,24 @@ class ToolsBuilder:
         if isinstance(tools, str):
             tools = json.loads(tools)
         prompt = copy.deepcopy(ToolsBuilder.TOOL_DESC)
-        prompt += '\n' + json.dumps(tools,ensure_ascii=False,indent=4)
+        tools_str = json.dumps(tools, ensure_ascii=False, indent=4)
+        if not tools_str.startswith('\n'):
+            tools_str = '\n' + tools_str
+        prompt += tools_str
         return prompt
 
 
     @classmethod
     def build_response(cls,step):
-        pos = step[0][2].find("Action Input: ")
+
+        pos = step[0][2].find("\nAction: ")
         thought = step[0][2][:pos]
         action = step[0][0]
         action_input = step[0][1]
 
-        pos = step[1].find("Response:") + len("Response:") + 1
-        observation = step[1][pos:]
+        # pos = step[1].find("Response:") + len("Response:") + 1
+        # observation = step[1][pos:]
+        observation = step[1]
 
         response = thought + '\n' + f'<|assistant|>{action}\n'
 

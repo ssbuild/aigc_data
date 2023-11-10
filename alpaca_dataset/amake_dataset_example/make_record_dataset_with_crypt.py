@@ -79,8 +79,8 @@ class DataReaderWriter:
 
 
 if __name__ == '__main__':
-    input_file = '../../asserts/input.txt'
-    output_file = '../../asserts/outputs/output.record'
+    input_file = '../../assets/input.txt'
+    output_file = '../../assets/outputs/output.record'
     DataReaderWriter.write(input_file,output_file )
     # 查看前10条
     DataReaderWriter.read(output_file, limit=10)
