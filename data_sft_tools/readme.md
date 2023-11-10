@@ -10,15 +10,11 @@
 - [tools_data 下载](https://huggingface.co/datasets/ssbuild/tools_data)
 
 
-- [tool_alpaca_for_qwen](https://huggingface.co/datasets/ssbuild/tool_alpaca_for_qwen)
-- [tool_bench_for_qwen](https://huggingface.co/datasets/ssbuild/tool_bench_for_qwen)
-
 ## 制作数据
 
 ###  下载原始数据
 - [tool_alpaca 原始数据](https://github.com/tangqiaoyu/ToolAlpaca/tree/main/data/train_data.json)
 - [tool_bench 原始数据](https://cloud.tsinghua.edu.cn/f/c9e50625743b40bfbe10/)
-- 
 
 
 
