@@ -36,9 +36,20 @@ class ToolsBuilder:
 
         response += f'''
           ```python
-        tool_call({action_input})
-        ```
-        '''
+tool_call({action_input})
+```
+'''
+        return response,observation
+
+    @classmethod
+    def build_response_with_args(cls, thought,action,action_input,observation):
 
 
+        response = thought + '\n' + f'<|assistant|>{action}\n'
+
+        response += f'''
+          ```python
+tool_call({action_input})
+```
+'''
         return response,observation

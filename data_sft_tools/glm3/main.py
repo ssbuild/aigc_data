@@ -3,6 +3,9 @@
 # @Time    : 2023/11/9 15:51
 import os
 import sys
+
+from tqdm import tqdm
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../..')))
 import copy
 import json
@@ -34,16 +37,22 @@ class ToolsDataMaker(ToolsDataMakerBase):
                     parameters_all = format_parameters_from_json_string(parameters_all)
                     func_desc = re.match(r"(.*)\nParameters", func_description, flags=re.DOTALL)
                     func_desc = func_desc.group(1) if func_desc else ""
-                    parameters = {}
+                    parameters = {
+                        "type": "object",
+                        "properties": {}
+                    }
+                    properties = parameters["properties"]
+                    required = []
                     for k, v in parameters_all.items():
-                        parameters["name"] = k
+                        properties[k] = {}
+                        properties[k]["type"] = get_type_from_desc(v)
+                        properties[k]["description"] = v
                         parameters["description"] = v
-                        parameters["required"] = 'Required' in v
-                        parameters["schema"] = {}
-                        parameters["type"] = get_type_from_desc(v)
+                        if 'Required' in v:
+                            required.append(k)
+                    properties["required"] = required
                     o = {
-                        "name_for_human": func_name,
-                        "name_for_model": func_name,
+                        "name": func_name,
                         "description_for_model": func_desc,
                         "parameters": parameters
                     }
@@ -107,19 +116,170 @@ class ToolsDataMaker(ToolsDataMakerBase):
                 conversations.clear()
         return all_conversations
 
+    @classmethod
+    def preprocess_tool_bench(cls, path_file):
+        all_conversations = []
+        if os.path.isdir(path_file):
+            filenames = [os.path.join(path_file, f) for f in os.listdir(path_file) if f.endswith('.json')]
+        else:
+            filenames = [path_file]
+
+        for index, filename in tqdm(enumerate(filenames),total=len(filenames)):
+            with open(filename, mode='r', encoding='utf-8') as f:
+                jd = json.loads(f.read())
+
+            ag = jd["answer_generation"]
+            if not ag["valid_data"]:
+                continue
+
+            query = ag["query"]
+            finish_type = ag["finish_type"]
+            final_answer = ag["final_answer"]
+            function = ag["function"]
+            train_messages = ag["train_messages"][-1]
+
+            assert finish_type == "give_answer"
+
+            tools = function
 
 
+            train_messages = [m for m in train_messages if m.get("valid", True) and m.get("role") != "system"]
+            assert train_messages[0]["role"] == "user"
+            assert "function_call" in train_messages[-1]
+            train_messages[0]["content"] = query
 
+            role = None
+            for i, m in enumerate(train_messages):
+                if m["role"] == role and role == "user":
+                    assert ValueError(m["role"])
+                role = m["role"]
 
-if __name__ == '__main__':
+            train_messages_parsed = []
+            i = 0
+            thought = ""
+            while i < len(train_messages):
+                m = train_messages[i]
+                i += 1
+                assert m["role"] in ["user", "function"]
+
+                if m["role"] == "function":
+                    assert train_messages_parsed[-1]["role"] == "assistant", ValueError(train_messages_parsed[-1])
+                    train_messages_parsed[-1]["observation"] = m["content"]
+
+                train_messages_parsed.append(m)
+                m = train_messages[i]
+                i += 1
+
+                assert m["role"] == "assistant"
+                function_call = None
+
+                j = i - 1
+                while j < len(train_messages):
+                    m = train_messages[j]
+                    if m["role"] != "assistant":
+                        j -= 1
+                        break
+                    if "function_call" in m:
+                        assert function_call is None
+                        function_call = m["function_call"]
+                    else:
+                        thought += m["content"]
+                    j += 1
+                i = j
+                i += 1
+
+                assert function_call is not None
+                train_messages_parsed.append({
+                    "role": "assistant",
+                    "content": thought,
+                    "function_call": function_call
+                })
+
+            conversations = []
+
+            conversations.append({
+                "from": "user",
+                "value": ToolsBuilder.build_system(tools)
+            })
+            for i, (q, a) in enumerate(zip(train_messages_parsed[::2], train_messages_parsed[1::2])):
+                role = q["role"]
+                q = q["content"]
+                thought = a["content"]
+                function_call = a["function_call"]
+                if i == 0:
+                    conversations.append({
+                        "from": "user",
+                        "value": q
+                    })
+                else:
+                    assert role == "function"
+                    conversations.append({
+                        "from": "observation",
+                        "value": q
+                    })
+
+                action = function_call["name"]
+                action_input = function_call["arguments"]
+
+                assert "observation" in a or (function_call["name"] == "Finish")
+
+                if function_call["name"] == "Finish":
+                    try:
+                        observation = json.loads(function_call["arguments"])["final_answer"]
+                    except Exception as e:
+                        # print(e)
+                        conversations.pop(-1)
+                        break
+                    conversations.append({
+                        "from": "assistant",
+                        "value": observation
+                    })
+
+                else:
+                    observation = a["observation"]
+                    response, observation = ToolsBuilder.build_response_with_args(thought, action, action_input,
+                                                                                  observation)
+                    conversations.append({
+                        "from": "assistant",
+                        "value": response
+                    })
+
+            if conversations:
+                all_conversations.append({
+                    "id": len(all_conversations),
+                    "conversations": copy.deepcopy(conversations)
+                })
+
+        return all_conversations
+
+def build_tool_alpaca():
     filename = r'E:\py-http\ToolAlpaca\data\train_data.json'
     output_file = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_glm3.parquet'
-    output_file_json = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_glm3.json'
-    os.makedirs(os.path.dirname(output_file),exist_ok=True)
+    output_file_json = output_file.replace('.parquet', '.json')
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
     all_conversations = ToolsDataMaker.preprocess_tool_alpaca(filename)
 
-    ToolsDataMaker.write(all_conversations,output_file)
-    ToolsDataMaker.write_json(all_conversations,output_file_json)
+    ToolsDataMaker.write(all_conversations, output_file)
+    ToolsDataMaker.write_json(all_conversations, output_file_json)
 
     ToolsDataMaker.read(output_file)
+
+def build_tool_bench():
+    filename = r'F:\nlpdata_2023\tool_bench\data\data\answer\G1_answer'
+    output_file = r'E:\py-http\ToolBench\data_example\answer\tool_bench_for_glm3.parquet'
+    output_file_json = output_file.replace('.parquet', '.json')
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+    all_conversations = ToolsDataMaker.preprocess_tool_bench(filename)
+
+    ToolsDataMaker.write(all_conversations, output_file)
+    ToolsDataMaker.write_json(all_conversations, output_file_json)
+
+    ToolsDataMaker.read(output_file)
+
+if __name__ == '__main__':
+    build_tool_alpaca()
+    build_tool_bench()
+
+

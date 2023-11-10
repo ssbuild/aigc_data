@@ -51,5 +51,5 @@ def format_parameters_from_json_string(json_str: str):
         try:
             json_str_new = clean_json(json_str)
             return json.loads(json_str_new)
-        except  Exception as e:
+        except Exception as e:
             raise e

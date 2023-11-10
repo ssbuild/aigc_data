@@ -87,10 +87,9 @@ class ToolsDataMaker(ToolsDataMakerBase):
                     "from": "observation",
                     "value": 'Observation: ' + observation
                 })
-
                 conversations.append({
                     "from": "assistant",
-                    "value":  instance["output"]
+                    "value":  ToolsBuilder.build_final_response_with_args(instance["Final Thought"],instance["output"])
                 })
 
                 if conversations:
@@ -103,14 +102,13 @@ class ToolsDataMaker(ToolsDataMakerBase):
 
     @classmethod
     def preprocess_tool_bench(cls, path_file):
+        all_conversations = []
         if os.path.isdir(path_file):
             filenames = [os.path.join(path_file,f) for f in os.listdir(path_file) if f.endswith('.json')]
         else:
             filenames = [path_file]
 
-        for index,filename in tqdm(enumerate(filenames)):
-            # if index > 100:
-            #     break
+        for index, filename in tqdm(enumerate(filenames), total=len(filenames)):
             with open(filename, mode='r', encoding='utf-8') as f:
                 jd = json.loads(f.read())
 
@@ -119,10 +117,13 @@ class ToolsDataMaker(ToolsDataMakerBase):
                 continue
 
             query = ag["query"]
+            finish_type = ag["finish_type"]
             final_answer = ag["final_answer"]
             function = ag["function"]
             train_messages = ag["train_messages"][-1]
-            all_conversations = []
+
+            assert finish_type == "give_answer"
+            
 
             tools = []
             for func_obj in function:
@@ -160,18 +161,20 @@ class ToolsDataMaker(ToolsDataMakerBase):
                 role = m["role"]
 
 
-            parse_train_messages = []
+            train_messages_parsed = []
             i = 0
             thought = ""
             while i < len(train_messages):
                 m = train_messages[i]
                 i += 1
+                assert m["role"] in ["user", "function"]
 
-                if m["role"] not in ["user","function"]:
-                    print(json.dumps(train_messages,ensure_ascii=False,indent=2))
-                    raise ValueError(i,m)
 
-                parse_train_messages.append(m)
+                if m["role"] == "function":
+                    assert train_messages_parsed[-1]["role"] == "assistant",ValueError(train_messages_parsed[-1])
+                    train_messages_parsed[-1]["observation"] = m["content"]
+
+                train_messages_parsed.append(m)
                 m = train_messages[i]
                 i += 1
 
@@ -194,99 +197,96 @@ class ToolsDataMaker(ToolsDataMakerBase):
                 i += 1
 
                 assert function_call is not None
-
-                observation = ""
-                if i + 1 < len(train_messages):
-                    assert train_messages[i]["role"] == "function",ValueError(train_messages[i])
-                    observation = train_messages[i]["content"]
-
-                parse_train_messages.append({
+                train_messages_parsed.append({
                     "role" : "assistant",
                     "content": thought,
-                    "function_call": function_call,
-                    "observation": observation
+                    "function_call": function_call
                 })
-                # print("thought",thought)
-
-
-            continue
 
             conversations = []
-            for i,(q,a) in enumerate(zip(parse_train_messages[::2],parse_train_messages[1::2])):
+            for i,(q,a) in enumerate(zip(train_messages_parsed[::2],train_messages_parsed[1::2])):
                 role = q["role"]
                 q = q["content"]
-                thought = q["content"]
-                function_call = q["function_call"]
+                thought = a["content"]
+                function_call = a["function_call"]
                 if i == 0:
                     conversations.append({
                         "from": "user",
                         "value": ToolsBuilder.build(tools, query=q)
                     })
                 else:
+                    assert role == "function"
                     conversations.append({
-                        "from": role,
+                        "from": "observation",
                         "value": q
                     })
 
 
+                action = function_call["name"]
+                action_input = function_call["arguments"]
 
-            action = function_call["name"]
-            action_input = function_call["arguments"]
-            observation = q if role == "function" else ""
-            response, observation = ToolsBuilder.build_response_with_args(thought,action,action_input,observation)
-            conversations.append({
-                "from": "assistant",
-                "value": response
-            })
+                assert "observation" in a or (function_call["name"] == "Finish")
 
-            conversations.append({
-                "from": "observation",
-                "value": 'Observation: ' + observation
-            })
+                if function_call["name"] == "Finish":
+                    try:
+                        observation = json.loads(function_call["arguments"])["final_answer"]
+                    except Exception as e:
+                        # print(e)
+                        conversations.pop(-1)
+                        break
+                    conversations.append({
+                        "from": "assistant",
+                        "value": ToolsBuilder.build_final_response_with_args(thought,observation)
+                    })
 
-            conversations.append({
-                "from": "assistant",
-                "value": instance["output"]
-            })
+                else:
+                    observation = a["observation"]
+                    response, observation = ToolsBuilder.build_response_with_args(thought,action,action_input,observation)
+                    conversations.append({
+                        "from": "assistant",
+                        "value": response
+                    })
+
+
 
             if conversations:
                 all_conversations.append({
                     "id": len(all_conversations),
                     "conversations": copy.deepcopy(conversations)
                 })
-            conversations.clear()
-            print(train_messages)
-
-            print(json.dumps(train_messages,ensure_ascii=False,indent=2))
 
 
+
+        return all_conversations
+
+
+
+def build_tool_alpaca():
+    filename = r'E:\py-http\ToolAlpaca\data\train_data.json'
+    output_file = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_qwen.parquet'
+    output_file_json = output_file.replace('.parquet', '.json')
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+    all_conversations = ToolsDataMaker.preprocess_tool_alpaca(filename)
+
+    ToolsDataMaker.write(all_conversations, output_file)
+    ToolsDataMaker.write_json(all_conversations, output_file_json)
+
+    ToolsDataMaker.read(output_file)
+
+def build_tool_bench():
+    filename = r'F:\nlpdata_2023\tool_bench\data\data\answer\G1_answer'
+    output_file = r'E:\py-http\ToolBench\data_example\answer\tool_bench_for_qwen.parquet'
+    output_file_json = output_file.replace('.parquet', '.json')
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+    all_conversations = ToolsDataMaker.preprocess_tool_bench(filename)
+
+    ToolsDataMaker.write(all_conversations, output_file)
+    ToolsDataMaker.write_json(all_conversations, output_file_json)
+
+    ToolsDataMaker.read(output_file)
 
 if __name__ == '__main__':
-    data_type = "tool_alpaca"
-    data_type = "tool_bench"
-
-    if data_type == "tool_alpaca":
-        filename = r'E:\py-http\ToolAlpaca\data\train_data.json'
-        output_file = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_qwen.parquet'
-        output_file_json = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_qwen.json'
-        os.makedirs(os.path.dirname(output_file),exist_ok=True)
-
-        all_conversations = ToolsDataMaker.preprocess_tool_alpaca(filename)
-
-        ToolsDataMaker.write(all_conversations,output_file)
-        ToolsDataMaker.write_json(all_conversations,output_file_json)
-
-        ToolsDataMaker.read(output_file)
-    else:
-
-        filename = r'F:\nlpdata_2023\tool_bench\data\data\answer\G1_answer'
-        output_file = r'E:\py-http\ToolBench\data_example\answer\tool_bench_for_qwen.parquet'
-        output_file_json = r'E:\py-http\ToolAlpaca\data\record\tool_bench_for_qwen.json'
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
-
-        all_conversations = ToolsDataMaker.preprocess_tool_bench(filename)
-
-        # ToolsDataMaker.write(all_conversations, output_file)
-        # ToolsDataMaker.write_json(all_conversations, output_file_json)
-        #
-        # ToolsDataMaker.read(output_file)
+    build_tool_alpaca()
+    build_tool_bench()

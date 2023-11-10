@@ -49,4 +49,4 @@ class ToolsDataMakerBase:
         for i in range(len(dataset)):
             if i >= n:
                 break
-            print(dataset[i])
+            print(json.dumps(dataset[i],ensure_ascii=False,indent=2))
