@@ -253,8 +253,8 @@ class ToolsDataMaker(ToolsDataMakerBase):
         return all_conversations
 
 def build_tool_alpaca():
-    filename = r'E:\py-http\ToolAlpaca\data\train_data.json'
-    output_file = r'E:\py-http\ToolAlpaca\data\record\tool_alpaca_for_glm3.parquet'
+    filename = r'F:\nlpdata_2023\ToolAlpaca\data\train_data.json'
+    output_file = r'F:\nlpdata_2023\ToolAlpaca\data\record\tool_alpaca_for_glm3.parquet'
     output_file_json = output_file.replace('.parquet', '.json')
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
