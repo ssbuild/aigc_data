@@ -66,27 +66,26 @@ class ToolsDataMaker(ToolsDataMakerBase):
                 intermediate_steps = instance.get("intermediate_steps",None)
                 if not intermediate_steps:
                     continue
-                if len(intermediate_steps) > 5:
+                if len(intermediate_steps) > 5 or len(intermediate_steps) == 0:
                     continue
 
-                if len(intermediate_steps) != 1:
-                    # qwen 模板暂时不支持同时请求多个函数
-                    continue
                 conversations.append({
                     "from": "user",
                     "value": ToolsBuilder.build(tools,query=instance["input"])
                 })
 
-                response,observation = ToolsBuilder.build_response(intermediate_steps[0])
-                conversations.append({
-                    "from": "assistant",
-                    "value": response
-                })
+                for intermediate_step in intermediate_steps:
 
-                conversations.append({
-                    "from": "observation",
-                    "value": 'Observation: ' + observation
-                })
+                    response,observation = ToolsBuilder.build_response(intermediate_step)
+                    conversations.append({
+                        "from": "assistant",
+                        "value": response
+                    })
+
+                    conversations.append({
+                        "from": "observation",
+                        "value": 'Observation: ' + observation
+                    })
                 conversations.append({
                     "from": "assistant",
                     "value":  ToolsBuilder.build_final_response_with_args(instance["Final Thought"],instance["output"])
